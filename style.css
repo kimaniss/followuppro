@@ -302,14 +302,6 @@ html, body {
 }
 .badge.red { background-color: var(--status-red-bg); color: var(--status-red-text); }
 
-.view-all {
-    font-size: 13px;
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 500;
-}
-.view-all:hover { text-decoration: underline; }
-
 /* Tables */
 .table-responsive {
     width: 100%;
@@ -362,6 +354,8 @@ html, body {
 }
 .status-badge.orange { background-color: var(--status-orange-bg); color: var(--status-orange-text); }
 .status-badge.yellow { background-color: var(--status-yellow-bg); color: var(--status-yellow-text); }
+.status-badge.green { background-color: var(--status-green-bg); color: var(--status-green-text); }
+.status-badge.red { background-color: var(--status-red-bg); color: var(--status-red-text); }
 
 /* WhatsApp Button */
 .btn-whatsapp {
@@ -381,42 +375,6 @@ html, body {
 }
 .btn-whatsapp:hover {
     background-color: var(--whatsapp-hover);
-}
-
-/* Recent List */
-.recent-list {
-    list-style: none;
-    padding: 8px 0;
-    width: 100%;
-}
-
-.recent-list li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 24px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.recent-list li:last-child {
-    border-bottom: none;
-}
-
-.recent-info strong {
-    display: block;
-    font-size: 13px;
-    color: var(--primary);
-}
-
-.recent-info span {
-    font-size: 11px;
-    color: var(--text-muted);
-}
-
-.recent-amount {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary);
 }
 
 /* --- RESPONSIVE STYLES (MOBILE & TABLET) --- */
@@ -466,12 +424,6 @@ html, body {
     .stat-card {
         width: 100%;
         max-width: 100%;
-    }
-
-    .content-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-        width: 100%;
     }
 
     .card, .section-card {
