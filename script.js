@@ -35,12 +35,16 @@ if (toggleAuthModeBtn) {
 
 // Fungsi Log Keluar (Logout)
 function logoutUser() {
-    if (window.auth) {
-        window.signOut(window.auth).then(() => {
-            window.location.reload();
-        }).catch((error) => {
-            console.error("Ralat logout: ", error);
-        });
+    if (confirm("Adakah anda pasti mahu log keluar?")) {
+        if (window.auth) {
+            window.signOut(window.auth).then(() => {
+                // Selepas logout, reload halaman untuk kembali ke skrin login
+                window.location.reload();
+            }).catch((error) => {
+                console.error("Ralat logout: ", error);
+                alert("Gagal log keluar.");
+            });
+        }
     }
 }
 
