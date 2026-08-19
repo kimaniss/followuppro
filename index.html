@@ -64,17 +64,19 @@
         <!-- Main Content Area -->
         <main class="main-content">
             <!-- Top Header / Navbar -->
-            <header class="top-header">
-                <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
-                <div class="header-title">
-                    <h1 id="pageTitle">Dashboard</h1>
-                </div>
-                <div class="header-user" style="display: flex; align-items: center; gap: 12px;">
-                    <span class="user-name" id="headerUserName">Ahmad Bisnes</span>
-                    <div class="user-avatar">AB</div>
-                    <button type="button" onclick="logoutUser()" title="Log Keluar" style="background: #FEE2E2; color: #DC2626; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;"><i class="fa-solid fa-right-from-bracket"></i></button>
-                </div>
-            </header>
+<header class="top-header">
+    <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+    <div class="header-title">
+        <h1 id="pageTitle">Dashboard</h1>
+    </div>
+    <div class="header-user" style="display: flex; align-items: center; gap: 15px;">
+        <span class="user-name" id="headerUserName" style="font-size: 13px; font-weight: 600;">Ahmad Bisnes</span>
+        <!-- BUTANG LOGOUT YANG JELAS -->
+        <button type="button" onclick="logoutUser()" style="background: #FEE2E2; color: #DC2626; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-right-from-bracket"></i> Keluar
+        </button>
+    </div>
+</header>
 
             <!-- VIEW 1: DASHBOARD -->
             <div id="viewDashboard" class="view-section">
