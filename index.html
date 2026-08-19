@@ -335,7 +335,36 @@
         </div>
     </div>
 
-    <!-- Pautan Script -->
+    <!-- Pautan SDK Firebase (CDN) -->
+    <script type="module">
+        // Import fungsi Firebase yang diperlukan
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // LETAKKAN KREDENSI FIREBASE ANDA DI SINI
+        const firebaseConfig = {
+            apiKey: "GANTI_DENGAN_API_KEY_ANDA",
+            authDomain: "GANTI_DENGAN_AUTH_DOMAIN",
+            projectId: "GANTI_DENGAN_PROJECT_ID",
+            storageBucket: "GANTI_DENGAN_STORAGE_BUCKET",
+            messagingSenderId: "GANTI_DENGAN_MESSAGING_SENDER_ID",
+            appId: "GANTI_DENGAN_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Kita akan sambungkan fungsi data ke script.ivs seterusnya
+        window.db = db;
+        window.collection = collection;
+        window.getDocs = getDocs;
+        window.addDoc = addDoc;
+        window.updateDoc = updateDoc;
+        window.doc = doc;
+    </script>
+
+    <!-- Pautan Script Utama -->
     <script src="script.js"></script>
 </body>
 </html>
