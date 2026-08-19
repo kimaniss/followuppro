@@ -28,8 +28,8 @@
                 <li id="menuFollowups">
                     <a href="#" onclick="switchView('followups')"><i class="fa-solid fa-clock-rotate-left"></i> Follow-ups</a>
                 </li>
-                <li>
-                    <a href="#"><i class="fa-solid fa-chart-line"></i> Sales</a>
+                <li id="menuSales">
+                    <a href="#" onclick="switchView('sales')"><i class="fa-solid fa-chart-line"></i> Sales</a>
                 </li>
                 <li>
                     <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
@@ -85,7 +85,7 @@
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Total Sales</span>
-                                <h3 class="stat-value">RM12,450</h3>
+                                <h3 class="stat-value" id="totalSalesDisplay">RM12,450</h3>
                             </div>
                             <div class="stat-icon green">
                                 <i class="fa-solid fa-wallet"></i>
@@ -95,7 +95,7 @@
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Purchased</span>
-                                <h3 class="stat-value">64</h3>
+                                <h3 class="stat-value" id="totalPurchasedCount">64</h3>
                             </div>
                             <div class="stat-icon purple">
                                 <i class="fa-solid fa-bag-shopping"></i>
@@ -177,7 +177,6 @@
                         <h2>SENARAI FOLLOW-UP 🔔</h2>
                         <p>Customer yang perlu dihubungi segera supaya sales tidak terlepas.</p>
                     </div>
-                    
                     <div class="card section-card">
                         <div class="card-header">
                             <h3>TINDAKAN SUSULAN (OVERDUE & HARI INI)</h3>
@@ -195,6 +194,60 @@
                                     </tr>
                                 </thead>
                                 <tbody id="followupTableBody">
+                                    <!-- Dinamik oleh JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: SALES (Jejak Jualan & Pendapatan) -->
+            <div id="viewSales" class="view-section" style="display: none;">
+                <div class="dashboard-body">
+                    <div class="welcome-banner">
+                        <h2>PRESTASI SALES 💰</h2>
+                        <p>Semak jumlah jualan dan senarai customer yang telah berjaya menutup pembelian.</p>
+                    </div>
+
+                    <!-- Sales Metric Card -->
+                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Jumlah Pendapatan (RM)</span>
+                                <h3 class="stat-value" id="salesTotalRevenue">RM0</h3>
+                            </div>
+                            <div class="stat-icon green">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Jumlah Transaksi Berjaya</span>
+                                <h3 class="stat-value" id="salesTotalCount">0</h3>
+                            </div>
+                            <div class="stat-icon purple">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h3>SENARAI CUSTOMER BERJAYA BELI (PURCHASED)</h3>
+                            <span class="badge green">Closed Sales</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama & WhatsApp</th>
+                                        <th>Produk / Servis</th>
+                                        <th>Nilai Jualan (RM)</th>
+                                        <th>Tarikh Rekod</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTableBody">
                                     <!-- Dinamik oleh JS -->
                                 </tbody>
                             </table>
@@ -229,7 +282,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
                     <div>
                         <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Nilai (RM)</label>
-                        <input type="text" id="custValue" required placeholder="850" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
+                        <input type="number" id="custValue" required placeholder="850" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
                     </div>
                     <div>
                         <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Status</label>
