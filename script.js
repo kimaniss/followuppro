@@ -95,8 +95,8 @@ function switchView(viewName) {
     sidebar.classList.remove('active');
 }
 
-// Senarai Data Awal
-let customers = [
+// Muat Data dari LocalStorage atau guna Data Default
+let customers = JSON.parse(localStorage.getItem('followuppro_customers')) || [
     {
         name: "Ahmad Rahman",
         phone: "60123456789",
@@ -123,6 +123,25 @@ let customers = [
     }
 ];
 
+// Muat Tetapan Profil dari LocalStorage
+let appSettings = JSON.parse(localStorage.getItem('followuppro_settings')) || {
+    owner: "Ahmad Bisnes",
+    business: "FOLLOWUPPRO Agency",
+    message: "Hi [Nama] 👋 Saya nak follow up berkenaan [Produk] yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?"
+};
+
+// Set nilai awal pada form settings & header
+settingOwnerName.value = appSettings.owner;
+settingBusinessName.value = appSettings.business;
+settingDefaultMessage.value = appSettings.message;
+headerUserName.innerText = appSettings.owner;
+greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+
+// Fungsi Simpan Data ke LocalStorage
+function saveToLocalStorage() {
+    localStorage.setItem('followuppro_customers', JSON.stringify(customers));
+}
+
 // Tukar format YYYY-MM-DD kepada DD/MM/YYYY
 function formatDateDisplay(dateString) {
     if (!dateString) return '';
@@ -136,9 +155,8 @@ function formatDateDisplay(dateString) {
 // Fungsi Buka WhatsApp Click-to-Chat Mengikut Template Tetapan
 function openWhatsApp(name, phone, product) {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
-    let template = settingDefaultMessage.value || `Hi [Nama] 👋 Saya nak follow up berkenaan [Produk] yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?`;
+    let template = settingDefaultMessage.value || appSettings.message;
     
-    // Ganti tag dinamik [Nama] dan [Produk]
     const message = template.replace('[Nama]', name).replace('[Produk]', product);
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
@@ -250,7 +268,7 @@ function renderAllData() {
     salesTotalCount.innerText = purchasedCount;
 }
 
-// Tambah Customer Baru
+// Tambah Customer Baru & Simpan
 addCustomerForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -264,21 +282,27 @@ addCustomerForm.addEventListener('submit', function(e) {
     };
 
     customers.unshift(newCust);
+    saveToLocalStorage();
     renderAllData();
 
     addCustomerForm.reset();
     modal.style.display = 'none';
 });
 
-// Simpan Tetapan Profil
+// Simpan Tetapan Profil & LocalStorage
 settingsForm.addEventListener('submit', function(e) {
     e.preventDefault();
-    const owner = settingOwnerName.value;
     
-    headerUserName.innerText = owner;
-    greetingName.innerHTML = `GOOD MORNING, ${owner.toUpperCase()} 👋`;
+    appSettings.owner = settingOwnerName.value;
+    appSettings.business = settingBusinessName.value;
+    appSettings.message = settingDefaultMessage.value;
+
+    localStorage.setItem('followuppro_settings', JSON.stringify(appSettings));
     
-    alert('Tetapan berjaya disimpan!');
+    headerUserName.innerText = appSettings.owner;
+    greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+    
+    alert('Tetapan dan profil perniagaan berjaya disimpan!');
     switchView('dashboard');
 });
 
