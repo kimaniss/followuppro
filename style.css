@@ -431,3 +431,30 @@ html, body {
         max-width: 100%;
     }
 }
+
+/* --- BUTTON EDIT STYLING --- */
+.btn-edit {
+    background-color: #E2E8F0;
+    color: var(--text-main);
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.2s;
+    margin-right: 4px;
+    white-space: nowrap;
+}
+.btn-edit:hover {
+    background-color: #CBD5E1;
+}
+
+.action-btns {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
