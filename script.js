@@ -15,7 +15,7 @@ const addCustomerForm = document.getElementById('addCustomerForm');
 const settingsForm = document.getElementById('settingsForm');
 const modalTitle = document.getElementById('modalTitle');
 const saveBtnText = document.getElementById('saveBtnText');
-const editIndexInput = document.getElementById('editIndex');
+const editDocIdInput = document.getElementById('editDocId'); // Menggunakan ID Firestore
 
 // Table Bodies
 const customerTableBody = document.getElementById('customerTableBody');
@@ -58,7 +58,7 @@ const menuSettings = document.getElementById('menuSettings');
 openModalBtn.addEventListener('click', () => {
     modalTitle.innerText = "Tambah Customer Baru";
     saveBtnText.innerText = "Simpan Customer";
-    editIndexInput.value = "-1";
+    editDocIdInput.value = "";
     addCustomerForm.reset();
     modal.style.display = 'flex';
 });
@@ -106,27 +106,10 @@ function switchView(viewName) {
     sidebar.classList.remove('active');
 }
 
-// Muat Data dari LocalStorage atau guna Data Default
-let customers = JSON.parse(localStorage.getItem('followuppro_customers')) || [
-    {
-        name: "Ahmad Rahman",
-        phone: "60123456789",
-        product: "Website Package",
-        value: 850,
-        status: "Follow-up",
-        date: "2026-08-19"
-    },
-    {
-        name: "Siti Aminah",
-        phone: "60198765432",
-        product: "Landing Page",
-        value: 350,
-        status: "Purchased",
-        date: "2026-08-18"
-    }
-];
+// Senarai Data Global dari Firebase
+let customers = [];
 
-// Muat Tetapan Profil dari LocalStorage
+// Muat Tetapan Profil dari LocalStorage (Boleh diubah ke Firebase kemudian)
 let appSettings = JSON.parse(localStorage.getItem('followuppro_settings')) || {
     owner: "Ahmad Bisnes",
     business: "FOLLOWUPPRO Agency",
@@ -139,8 +122,18 @@ settingDefaultMessage.value = appSettings.message;
 headerUserName.innerText = appSettings.owner;
 greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
 
-function saveToLocalStorage() {
-    localStorage.setItem('followuppro_customers', JSON.stringify(customers));
+// --- FUNGSI FIREBASE CLOUD FIRESTORE ---
+async function fetchCustomersFromCloud() {
+    try {
+        const querySnapshot = await window.getDocs(window.collection(window.db, "customers"));
+        customers = [];
+        querySnapshot.forEach((docSnap) => {
+            customers.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        renderAllData();
+    } catch (error) {
+        console.error("Ralat memuatkan data dari Firebase: ", error);
+    }
 }
 
 function formatDateDisplay(dateString) {
@@ -161,9 +154,10 @@ function openWhatsApp(name, phone, product) {
     window.open(whatsappUrl, '_blank');
 }
 
-// Fungsi Buka Borang untuk Edit Customer
-function editCustomer(index) {
-    const cust = customers[index];
+// Fungsi Buka Borang untuk Edit Customer berdasarkan ID Firebase
+function editCustomer(id) {
+    const cust = customers.find(c => c.id === id);
+    if (!cust) return;
     
     document.getElementById('custName').value = cust.name;
     document.getElementById('custPhone').value = cust.phone;
@@ -172,14 +166,14 @@ function editCustomer(index) {
     document.getElementById('custStatus').value = cust.status;
     document.getElementById('custDate').value = cust.date;
     
-    editIndexInput.value = index;
+    editDocIdInput.value = cust.id;
     modalTitle.innerText = "Edit Customer";
     saveBtnText.innerText = "Kemas Kini Customer";
     modal.style.display = 'flex';
 }
 
-// Fungsi Pembantu untuk Membina Baris Jadual (Sama ada dengan atau tanpa butang Edit)
-function createCustomerRow(cust, index, showEditButton = false) {
+// Fungsi Pembantu untuk Membina Baris Jadual
+function createCustomerRow(cust, showEditButton = false) {
     let badgeClass = 'yellow';
     if(cust.status === 'Follow-up') badgeClass = 'orange';
     if(cust.status === 'Purchased') badgeClass = 'green';
@@ -198,12 +192,11 @@ function createCustomerRow(cust, index, showEditButton = false) {
 
     const formattedDate = formatDateDisplay(cust.date);
 
-    // Tetapkan tindakan: jika showEditButton true, paparkan butang Edit + WhatsApp. Jika false, hanya WhatsApp sahaja.
     let actionButtonsHTML = '';
     if (showEditButton) {
         actionButtonsHTML = `
             <div class="action-btns">
-                <button class="btn-edit" onclick="editCustomer(${index})">
+                <button class="btn-edit" onclick="editCustomer('${cust.id}')">
                     <i class="fa-solid fa-pen-to-square"></i> Edit
                 </button>
                 <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
@@ -246,7 +239,7 @@ function renderAllData() {
     let totalRevenue = 0;
     let purchasedCount = 0;
 
-    customers.forEach((cust, index) => {
+    customers.forEach((cust) => {
         if (cust.status === 'Purchased') {
             totalRevenue += Number(cust.value);
             purchasedCount++;
@@ -271,11 +264,11 @@ function renderAllData() {
             isNeedsAttention = true;
         }
 
-        // 1. Dashboard: Hantar false (Tiada butang edit)
-        customerTableBody.appendChild(createCustomerRow(cust, index, false));
+        // 1. Dashboard: Tanpa butang edit
+        customerTableBody.appendChild(createCustomerRow(cust, false));
 
-        // 2. Menu Customers Management: Hantar true (Wujud butang edit)
-        allCustomersTableBody.appendChild(createCustomerRow(cust, index, true));
+        // 2. Menu Customers: Dengan butang edit
+        allCustomersTableBody.appendChild(createCustomerRow(cust, true));
 
         // 3. Menu Follow-ups
         if (isNeedsAttention) {
@@ -310,11 +303,11 @@ function renderAllData() {
     salesTotalCount.innerText = purchasedCount;
 }
 
-// Submit Borang: Simpan Baru ATAU Kemas Kini Data Sedia Ada
-addCustomerForm.addEventListener('submit', function(e) {
+// Submit Borang: Simpan ke Firebase ATAU Kemas Kini Firebase
+addCustomerForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const editIndex = parseInt(editIndexInput.value);
+    const editDocId = editDocIdInput.value;
     const custData = {
         name: document.getElementById('custName').value,
         phone: document.getElementById('custPhone').value,
@@ -324,17 +317,25 @@ addCustomerForm.addEventListener('submit', function(e) {
         date: document.getElementById('custDate').value
     };
 
-    if (editIndex === -1) {
-        customers.unshift(custData);
-    } else {
-        customers[editIndex] = custData;
+    try {
+        if (!editDocId) {
+            // Tambah data baharu ke Cloud Firestore
+            await window.addDoc(window.collection(window.db, "customers"), custData);
+        } else {
+            // Kemas kini data sedia ada dalam Cloud Firestore
+            const docRef = window.doc(window.db, "customers", editDocId);
+            await window.updateDoc(docRef, custData);
+        }
+
+        // Ambil data terkini dari cloud dan render semula
+        await fetchCustomersFromCloud();
+
+        addCustomerForm.reset();
+        modal.style.display = 'none';
+    } catch (error) {
+        console.error("Ralat menyimpan data ke Firebase: ", error);
+        alert("Gagal menyimpan data ke pangkalan data awan.");
     }
-
-    saveToLocalStorage();
-    renderAllData();
-
-    addCustomerForm.reset();
-    modal.style.display = 'none';
 });
 
 // Simpan Tetapan Profil
@@ -354,5 +355,13 @@ settingsForm.addEventListener('submit', function(e) {
     switchView('dashboard');
 });
 
-// Jalankan paparan kali pertama
-renderAllData();
+// Jalankan pengambilan data dari Firebase apabila aplikasi mula dibuka
+window.addEventListener('DOMContentLoaded', () => {
+    // Pastikan Firebase sudah sedia sebelum fetch
+    const checkInterval = setInterval(() => {
+        if (window.db && window.getDocs) {
+            clearInterval(checkInterval);
+            fetchCustomersFromCloud();
+        }
+    }, 200);
+});
