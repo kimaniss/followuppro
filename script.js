@@ -20,7 +20,7 @@ openModalBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
 closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
 cancelModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
 
-// Senarai Data Awal (Array Storage untuk MVP)
+// Senarai Data Awal
 let customers = [
     {
         name: "Ahmad Rahman",
@@ -28,7 +28,7 @@ let customers = [
         product: "Website Package",
         value: "850",
         status: "Follow-up",
-        date: "2026-08-19" // Hari ini (Today)
+        date: "2026-08-19"
     },
     {
         name: "Siti Aminah",
@@ -36,33 +36,59 @@ let customers = [
         product: "Landing Page",
         value: "350",
         status: "Interested",
-        date: "2026-08-18" // Lepas (Overdue)
+        date: "2026-08-20"
     }
 ];
 
-// Fungsi untuk render semula jadual berdasarkan data
+// Fungsi untuk tukar format YYYY-MM-DD kepada DD/MM/YYYY
+function formatDateDisplay(dateString) {
+    if (!dateString) return '';
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateString;
+}
+
+// Fungsi untuk buka WhatsApp Click-to-Chat
+function openWhatsApp(name, phone, product) {
+    // Buang simbol tambahan pada nombor jika ada (kekalkan nombor sahaja)
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    
+    // Draf mesej follow-up mesra usahawan
+    const message = `Hi ${name} 👋 Saya nak follow up berkenaan ${product} yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?`;
+    
+    // Encode mesej untuk URL WhatsApp
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Buka pautan WhatsApp di tab baharu
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Fungsi untuk render semula jadual
 function renderCustomers() {
     customerTableBody.innerHTML = '';
     
-    // Tarikh Semasa (19 Ogos 2026)
-    const todayStr = "2026-08-19";
+    const todayStr = new Date().toISOString().split('T')[0];
 
-    customers.forEach(cust => {
-        // Tentukan warna badge status
+    customers.forEach((cust, index) => {
         let badgeClass = 'yellow';
         if(cust.status === 'Follow-up') badgeClass = 'orange';
         if(cust.status === 'Purchased') badgeClass = 'green';
         if(cust.status === 'Lost') badgeClass = 'red';
 
-        // Logik Follow-up Tag (Overdue / Today / Upcoming)
+        // Logik Follow-up Pintar
         let followUpBadge = '';
         if (cust.date < todayStr) {
-            followUpBadge = `<span class="status-badge red" style="margin-left: 6px;">Overdue</span>`;
+            followUpBadge = `<span class="status-badge red" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Overdue</span>`;
         } else if (cust.date === todayStr) {
-            followUpBadge = `<span class="status-badge orange" style="margin-left: 6px;">Hari Ini</span>`;
+            followUpBadge = `<span class="status-badge orange" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Hari Ini</span>`;
         } else {
-            followUpBadge = `<span class="status-badge green" style="margin-left: 6px;">Akan Datang</span>`;
+            followUpBadge = `<span class="status-badge green" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Akan Datang</span>`;
         }
+
+        const formattedDate = formatDateDisplay(cust.date);
 
         const newRow = document.createElement('tr');
         newRow.innerHTML = `
@@ -73,9 +99,9 @@ function renderCustomers() {
             <td>${cust.product}</td>
             <td>RM${cust.value}</td>
             <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
-            <td>${cust.date} ${followUpBadge}</td>
+            <td>${formattedDate} ${followUpBadge}</td>
             <td>
-                <button class="btn-whatsapp">
+                <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
                 </button>
             </td>
@@ -83,11 +109,10 @@ function renderCustomers() {
         customerTableBody.appendChild(newRow);
     });
 
-    // Kemaskini Total Customers
     totalCustomersElem.innerText = customers.length;
 }
 
-// Tambah Customer Baru ke dalam Array & Paparan
+// Tambah Customer Baru
 addCustomerForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -100,16 +125,12 @@ addCustomerForm.addEventListener('submit', function(e) {
         date: document.getElementById('custDate').value
     };
 
-    // Masukkan ke dalam senarai teratas
     customers.unshift(newCust);
-
-    // Refresh paparan jadual
     renderCustomers();
 
-    // Reset form dan tutup modal
     addCustomerForm.reset();
     modal.style.display = 'none';
 });
 
-// Jalankan render kali pertama apabila laman web dibuka
+// Jalankan render kali pertama
 renderCustomers();
