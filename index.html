@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOLLOWUPPRO - CRM Usahawan Kecil</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <h2>FOLLOWUP<span>PRO</span></h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active">
+                    <a href="#"><i class="fa-solid fa-house"></i> Dashboard</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-users"></i> Customers</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-clock-rotate-left"></i> Follow-ups</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-chart-line"></i> Sales</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header / Navbar -->
+            <header class="top-header">
+                <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+                <div class="header-title">
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="header-user">
+                    <span class="user-name">Ahmad Bisnes</span>
+                    <div class="user-avatar">AB</div>
+                </div>
+            </header>
+
+            <!-- Dashboard Body -->
+            <div class="dashboard-body">
+                <!-- Greeting Banner -->
+                <div class="welcome-banner">
+                    <h2>GOOD MORNING 👋</h2>
+                    <p>Jangan biarkan customer hilang kerana terlupa follow-up.</p>
+                </div>
+
+                <!-- Stats Metric Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Total Customers</span>
+                            <h3 class="stat-value">128</h3>
+                        </div>
+                        <div class="stat-icon blue">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Need Follow-up</span>
+                            <h3 class="stat-value">17</h3>
+                        </div>
+                        <div class="stat-icon orange">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Total Sales</span>
+                            <h3 class="stat-value">RM12,450</h3>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Purchased</span>
+                            <h3 class="stat-value">64</h3>
+                        </div>
+                        <div class="stat-icon purple">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Grid (Follow-ups & Recent Customers) -->
+                <div class="content-grid">
+                    
+                    <!-- Follow-up Hari Ini Section -->
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h3>FOLLOW-UP HARI INI</h3>
+                            <span class="badge red">2 Pending</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Customer</th>
+                                        <th>Produk</th>
+                                        <th>Status</th>
+                                        <th>Tindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Ahmad Rahman</strong>
+                                            <span class="sub-text">60123456789</span>
+                                        </td>
+                                        <td>Website Package</td>
+                                        <td><span class="status-badge orange">Follow-up</span></td>
+                                        <td>
+                                            <button class="btn-whatsapp">
+                                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Siti Aminah</strong>
+                                            <span class="sub-text">60198765432</span>
+                                        </td>
+                                        <td>Landing Page</td>
+                                        <td><span class="status-badge yellow">Interested</span></td>
+                                        <td>
+                                            <button class="btn-whatsapp">
+                                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Customer Terbaru Section -->
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h3>CUSTOMER TERBARU</h3>
+                            <a href="#" class="view-all">Lihat Semua</a>
+                        </div>
+                        <ul class="recent-list">
+                            <li>
+                                <div class="recent-info">
+                                    <strong>Ahmad</strong>
+                                    <span>Website</span>
+                                </div>
+                                <span class="recent-amount">RM850</span>
+                            </li>
+                            <li>
+                                <div class="recent-info">
+                                    <strong>Siti</strong>
+                                    <span>Landing Page</span>
+                                </div>
+                                <span class="recent-amount">RM350</span>
+                            </li>
+                            <li>
+                                <div class="recent-info">
+                                    <strong>Ali</strong>
+                                    <span>Website</span>
+                                </div>
+                                <span class="recent-amount">RM1,200</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Simple JavaScript untuk Responsive Sidebar Toggle -->
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
