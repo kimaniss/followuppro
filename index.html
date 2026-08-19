@@ -69,65 +69,52 @@
                 <div class="header-title">
                     <h1 id="pageTitle">Dashboard</h1>
                 </div>
-                <div class="header-user">
+                <div class="header-user" style="display: flex; align-items: center; gap: 12px;">
                     <span class="user-name" id="headerUserName">Ahmad Bisnes</span>
                     <div class="user-avatar">AB</div>
+                    <button type="button" onclick="logoutUser()" title="Log Keluar" style="background: #FEE2E2; color: #DC2626; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </header>
 
             <!-- VIEW 1: DASHBOARD -->
             <div id="viewDashboard" class="view-section">
                 <div class="dashboard-body">
-                    <!-- Greeting Banner -->
                     <div class="welcome-banner">
                         <h2 id="greetingName">GOOD MORNING 👋</h2>
                         <p>Jangan biarkan customer hilang.</p>
                     </div>
 
-                    <!-- Stats Metric Cards -->
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Total Customers</span>
                                 <h3 class="stat-value" id="totalCustomers">0</h3>
                             </div>
-                            <div class="stat-icon blue">
-                                <i class="fa-solid fa-users"></i>
-                            </div>
+                            <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
                         </div>
-
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Need Follow-up</span>
                                 <h3 class="stat-value" id="needFollowupCount">0</h3>
                             </div>
-                            <div class="stat-icon orange">
-                                <i class="fa-solid fa-bell"></i>
-                            </div>
+                            <div class="stat-icon orange"><i class="fa-solid fa-bell"></i></div>
                         </div>
-
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Total Sales</span>
                                 <h3 class="stat-value" id="totalSalesDisplay">RM0</h3>
                             </div>
-                            <div class="stat-icon green">
-                                <i class="fa-solid fa-wallet"></i>
-                            </div>
+                            <div class="stat-icon green"><i class="fa-solid fa-wallet"></i></div>
                         </div>
-
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Purchased</span>
                                 <h3 class="stat-value" id="totalPurchasedCount">0</h3>
                             </div>
-                            <div class="stat-icon purple">
-                                <i class="fa-solid fa-bag-shopping"></i>
-                            </div>
+                            <div class="stat-icon purple"><i class="fa-solid fa-bag-shopping"></i></div>
                         </div>
                     </div>
 
-                    <!-- ACTION BAR: Tambah Customer Button -->
                     <div class="action-bar" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
                         <h3 style="font-size: 16px; font-weight: 600; color: var(--primary);">Senarai Customer</h3>
                         <button id="openModalBtn" class="btn-primary" style="background-color: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
@@ -135,11 +122,10 @@
                         </button>
                     </div>
 
-                    <!-- Content Grid (Customer Management Table) -->
                     <div class="card section-card" style="margin-bottom: 32px;">
                         <div class="card-header">
                             <h3>CUSTOMER MANAGEMENT</h3>
-                            <span class="badge red">Firebase Live</span>
+                            <span class="badge red">Firebase Secured</span>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table">
@@ -153,26 +139,22 @@
                                         <th>Tindakan</th>
                                     </tr>
                                 </thead>
-                                <tbody id="customerTableBody">
-                                    <!-- Dinamik oleh JS -->
-                                </tbody>
+                                <tbody id="customerTableBody"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- VIEW 2: CUSTOMERS (Senarai Penuh) -->
+            <!-- VIEW 2: CUSTOMERS -->
             <div id="viewCustomers" class="view-section" style="display: none;">
                 <div class="dashboard-body">
                     <div class="welcome-banner">
                         <h2>SEMUA CUSTOMER 👥</h2>
-                        <p>Uruskan pangkalan data pelanggan anda (Boleh edit data).</p>
+                        <p>Uruskan pangkalan data pelanggan peribadi anda.</p>
                     </div>
                     <div class="card section-card">
-                        <div class="card-header">
-                            <h3>KESELURUHAN PELANGGAN</h3>
-                        </div>
+                        <div class="card-header"><h3>KESELURUHAN PELANGGAN</h3></div>
                         <div class="table-responsive">
                             <table class="data-table">
                                 <thead>
@@ -185,9 +167,7 @@
                                         <th>Tindakan</th>
                                     </tr>
                                 </thead>
-                                <tbody id="allCustomersTableBody">
-                                    <!-- Dinamik oleh JS -->
-                                </tbody>
+                                <tbody id="allCustomersTableBody"></tbody>
                             </table>
                         </div>
                     </div>
@@ -199,7 +179,7 @@
                 <div class="dashboard-body">
                     <div class="welcome-banner">
                         <h2>SENARAI FOLLOW-UP 🔔</h2>
-                        <p>Customer yang perlu dihubungi segera supaya sales tidak terlepas.</p>
+                        <p>Customer yang perlu dihubungi segera.</p>
                     </div>
                     <div class="card section-card">
                         <div class="card-header">
@@ -217,9 +197,7 @@
                                         <th>Tindakan WhatsApp</th>
                                     </tr>
                                 </thead>
-                                <tbody id="followupTableBody">
-                                    <!-- Dinamik oleh JS -->
-                                </tbody>
+                                <tbody id="followupTableBody"></tbody>
                             </table>
                         </div>
                     </div>
@@ -231,7 +209,7 @@
                 <div class="dashboard-body">
                     <div class="welcome-banner">
                         <h2>PRESTASI SALES 💰</h2>
-                        <p>Semak jumlah jualan dan senarai customer yang telah berjaya menutup pembelian.</p>
+                        <p>Semak jumlah jualan peribadi anda.</p>
                     </div>
                     <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 24px;">
                         <div class="stat-card">
@@ -239,18 +217,14 @@
                                 <span class="stat-label">Jumlah Pendapatan (RM)</span>
                                 <h3 class="stat-value" id="salesTotalRevenue">RM0</h3>
                             </div>
-                            <div class="stat-icon green">
-                                <i class="fa-solid fa-wallet"></i>
-                            </div>
+                            <div class="stat-icon green"><i class="fa-solid fa-wallet"></i></div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Jumlah Transaksi Berjaya</span>
                                 <h3 class="stat-value" id="salesTotalCount">0</h3>
                             </div>
-                            <div class="stat-icon purple">
-                                <i class="fa-solid fa-bag-shopping"></i>
-                            </div>
+                            <div class="stat-icon purple"><i class="fa-solid fa-bag-shopping"></i></div>
                         </div>
                     </div>
                     <div class="card section-card">
@@ -268,9 +242,7 @@
                                         <th>Tarikh Rekod</th>
                                     </tr>
                                 </thead>
-                                <tbody id="salesTableBody">
-                                    <!-- Dinamik oleh JS -->
-                                </tbody>
+                                <tbody id="salesTableBody"></tbody>
                             </table>
                         </div>
                     </div>
@@ -282,12 +254,10 @@
                 <div class="dashboard-body">
                     <div class="welcome-banner">
                         <h2>TETAPAN AKAUN ⚙️</h2>
-                        <p>Kemas kini maklumat profil perniagaan dan tetapan aplikasi anda.</p>
+                        <p>Kemas kini profil perniagaan anda.</p>
                     </div>
                     <div class="card section-card" style="max-width: 600px; padding: 24px;">
-                        <div class="card-header" style="padding: 0 0 16px 0; margin-bottom: 20px;">
-                            <h3>PROFIL USAHAWAN & BISNES</h3>
-                        </div>
+                        <div class="card-header" style="padding: 0 0 16px 0; margin-bottom: 20px;"><h3>PROFIL USAHAWAN & BISNES</h3></div>
                         <form id="settingsForm">
                             <div style="margin-bottom: 16px;">
                                 <label for="settingOwnerName" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Nama Pemilik / Bisnes</label>
@@ -310,7 +280,7 @@
         </main>
     </div>
 
-    <!-- MODAL / POPUP TAMBAH ATAU EDIT CUSTOMER -->
+    <!-- MODAL TAMBAH/EDIT CUSTOMER -->
     <div id="customerModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 16px;">
         <div class="modal-content" style="background: white; width: 100%; max-width: 500px; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -319,7 +289,6 @@
             </div>
             <form id="addCustomerForm">
                 <input type="hidden" id="editDocId" value="">
-                
                 <div style="margin-bottom: 14px;">
                     <label for="custName" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Nama Customer</label>
                     <input type="text" id="custName" required placeholder="Cth: Ali Ahmad" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
@@ -360,15 +329,14 @@
         </div>
     </div>
 
-    <!-- Pautan SDK Firebase (CDN) & Modul Auth -->
+    <!-- Pautan SDK Firebase (Termasuk Query & Where) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // GANTIKAN DENGAN KREDENSI FIREBASE ANDA
         const firebaseConfig = {
-             apiKey: "AIzaSyBxB20EoaDjQ2O8Q_V_9sCfEtveBagL7QQ",
+            apiKey: "AIzaSyBxB20EoaDjQ2O8Q_V_9sCfEtveBagL7QQ",
   authDomain: "followuppro-81a4e.firebaseapp.com",
   projectId: "followuppro-81a4e",
   storageBucket: "followuppro-81a4e.firebasestorage.app",
@@ -381,7 +349,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Dedahkan kepada window supaya script.js boleh capai
         window.db = db;
         window.auth = auth;
         window.collection = collection;
@@ -389,13 +356,13 @@
         window.addDoc = addDoc;
         window.updateDoc = updateDoc;
         window.doc = doc;
+        window.query = query;
+        window.where = where;
         window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
         window.signInWithEmailAndPassword = signInWithEmailAndPassword;
         window.signOut = signOut;
         window.onAuthStateChanged = onAuthStateChanged;
     </script>
-
-    <!-- Pautan Script Utama -->
     <script src="script.js"></script>
 </body>
 </html>
