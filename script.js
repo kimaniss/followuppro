@@ -109,18 +109,20 @@ function switchView(viewName) {
 // Senarai Data Global dari Firebase
 let customers = [];
 
-// Muat Tetapan Profil dari LocalStorage (Boleh diubah ke Firebase kemudian)
+// Muat Tetapan Profil dari LocalStorage (Fallback jika tiada)
 let appSettings = JSON.parse(localStorage.getItem('followuppro_settings')) || {
     owner: "Ahmad Bisnes",
     business: "FOLLOWUPPRO Agency",
     message: "Hi [Nama] 👋 Saya nak follow up berkenaan [Produk] yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?"
 };
 
-settingOwnerName.value = appSettings.owner;
-settingBusinessName.value = appSettings.business;
-settingDefaultMessage.value = appSettings.message;
-headerUserName.innerText = appSettings.owner;
-greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+// Tetapkan nilai hanya jika elemen wujud di dalam HTML untuk elak ralat null
+if (settingOwnerName) settingOwnerName.value = appSettings.owner;
+if (settingBusinessName) settingBusinessName.value = appSettings.business;
+if (settingDefaultMessage) settingDefaultMessage.value = appSettings.message;
+
+if (headerUserName) headerUserName.innerText = appSettings.owner;
+if (greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
 
 // --- FUNGSI FIREBASE CLOUD FIRESTORE ---
 async function fetchCustomersFromCloud() {
