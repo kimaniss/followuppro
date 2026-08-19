@@ -341,13 +341,37 @@
     </div>
 </div>
 
-    <!-- Pautan SDK Firebase (CDN) -->
+    <!-- SKRIN LOGIN / REGISTER (Paparan Awal) -->
+    <div id="authScreen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F8FAFC; z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: white; width: 100%; max-width: 400px; padding: 32px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid var(--border-color);">
+            <h2 style="font-size: 22px; font-weight: 700; color: #0F172A; margin-bottom: 8px; text-align: center;">FOLLOWUP<span style="color: #2563EB;">PRO</span></h2>
+            <p id="authSubtitle" style="font-size: 13px; color: #64748B; text-align: center; margin-bottom: 24px;">Log masuk ke akaun CRM anda</p>
+            
+            <form id="authForm">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: #64748B; margin-bottom: 6px;">Emel</label>
+                    <input type="email" id="authEmail" required placeholder="nama@bisnes.com" style="width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 6px; font-size: 13px;">
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: #64748B; margin-bottom: 6px;">Kata Laluan</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••" style="width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 6px; font-size: 13px;">
+                </div>
+                <button type="submit" id="authSubmitBtn" style="width: 100%; background: #2563EB; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 12px;">Log Masuk</button>
+            </form>
+            
+            <div style="text-align: center;">
+                <button id="toggleAuthModeBtn" style="background: none; border: none; color: #2563EB; font-size: 13px; font-weight: 500; cursor: pointer;">Belum ada akaun? Daftar sekarang</button>
+            </div>
+        </div>
+    </div>
+    
+<!-- Pautan SDK Firebase (CDN) termasuk Auth -->
     <script type="module">
-        // Import fungsi Firebase yang diperlukan
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // LETAKKAN KREDENSI FIREBASE ANDA DI SINI
+        // KREDENSI FIREBASE ANDA
         const firebaseConfig = {
             apiKey: "AIzaSyBxB20EoaDjQ2O8Q_V_9sCfEtveBagL7QQ",
   authDomain: "followuppro-81a4e.firebaseapp.com",
@@ -358,17 +382,22 @@
   measurementId: "G-CKLCQHEXGX"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        // Kita akan sambungkan fungsi data ke script.ivs seterusnya
+        // Dedahkan kepada window supaya script.js boleh guna
         window.db = db;
+        window.auth = auth;
         window.collection = collection;
         window.getDocs = getDocs;
         window.addDoc = addDoc;
         window.updateDoc = updateDoc;
         window.doc = doc;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
     </script>
 
     <!-- Pautan Script Utama -->
