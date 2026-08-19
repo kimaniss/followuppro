@@ -56,11 +56,11 @@ const menuSettings = document.getElementById('menuSettings');
 
 // Buka Modal untuk Tambah Baru
 openModalBtn.addEventListener('click', () => {
-    modalTitle.innerText = "Tambah Customer Baru";
-    saveBtnText.innerText = "Simpan Customer";
-    editDocIdInput.value = "";
-    addCustomerForm.reset();
-    modal.style.display = 'flex';
+    if (modalTitle) modalTitle.innerText = "Tambah Customer Baru";
+    if (saveBtnText) saveBtnText.innerText = "Simpan Customer";
+    if (editDocIdInput) editDocIdInput.value = ""; 
+    if (addCustomerForm) addCustomerForm.reset();
+    if (modal) modal.style.display = 'flex';
 });
 
 // Tutup Modal
