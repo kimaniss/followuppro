@@ -1,4 +1,3 @@
-// Toggle Sidebar Mobile
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
 
@@ -19,7 +18,6 @@ const toggleAuthModeBtn = document.getElementById('toggleAuthModeBtn');
 
 let isRegisterMode = false;
 
-// Toggle antara Login dan Register
 if (toggleAuthModeBtn) {
     toggleAuthModeBtn.addEventListener('click', () => {
         isRegisterMode = !isRegisterMode;
@@ -35,6 +33,17 @@ if (toggleAuthModeBtn) {
     });
 }
 
+// Fungsi Log Keluar (Logout)
+function logoutUser() {
+    if (window.auth) {
+        window.signOut(window.auth).then(() => {
+            window.location.reload();
+        }).catch((error) => {
+            console.error("Ralat logout: ", error);
+        });
+    }
+}
+
 // Modal Elements
 const modal = document.getElementById('customerModal');
 const openModalBtn = document.getElementById('openModalBtn');
@@ -46,13 +55,11 @@ const modalTitle = document.getElementById('modalTitle');
 const saveBtnText = document.getElementById('saveBtnText');
 const editDocIdInput = document.getElementById('editDocId');
 
-// Table Bodies
 const customerTableBody = document.getElementById('customerTableBody');
 const allCustomersTableBody = document.getElementById('allCustomersTableBody');
 const followupTableBody = document.getElementById('followupTableBody');
 const salesTableBody = document.getElementById('salesTableBody');
 
-// Metrics & Header Elements
 const totalCustomersElem = document.getElementById('totalCustomers');
 const needFollowupCountElem = document.getElementById('needFollowupCount');
 const followupCountBadge = document.getElementById('followupCountBadge');
@@ -64,26 +71,22 @@ const pageTitle = document.getElementById('pageTitle');
 const headerUserName = document.getElementById('headerUserName');
 const greetingName = document.getElementById('greetingName');
 
-// Setting Input Elements
 const settingOwnerName = document.getElementById('settingOwnerName');
 const settingBusinessName = document.getElementById('settingBusinessName');
 const settingDefaultMessage = document.getElementById('settingDefaultMessage');
 
-// View Sections
 const viewDashboard = document.getElementById('viewDashboard');
 const viewCustomers = document.getElementById('viewCustomers');
 const viewFollowups = document.getElementById('viewFollowups');
 const viewSales = document.getElementById('viewSales');
 const viewSettings = document.getElementById('viewSettings');
 
-// Menu Elements
 const menuDashboard = document.getElementById('menuDashboard');
 const menuCustomers = document.getElementById('menuCustomers');
 const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
 
-// Buka Modal untuk Tambah Baru
 if (openModalBtn) {
     openModalBtn.addEventListener('click', () => {
         if (modalTitle) modalTitle.innerText = "Tambah Customer Baru";
@@ -97,7 +100,6 @@ if (openModalBtn) {
 if (closeModalBtn) closeModalBtn.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
 if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
 
-// Fungsi Pertukaran Paparan Halaman (Switch View)
 function switchView(viewName) {
     if(viewDashboard) viewDashboard.style.display = 'none';
     if(viewCustomers) viewCustomers.style.display = 'none';
@@ -150,17 +152,24 @@ if (settingDefaultMessage) settingDefaultMessage.value = appSettings.message;
 if (headerUserName) headerUserName.innerText = appSettings.owner;
 if (greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
 
-// Firebase Cloud Firestore Fetch
+// AMBIL DATA BERDASARKAN USER UID SAHAJA
 async function fetchCustomersFromCloud() {
+    const user = window.auth.currentUser;
+    if (!user) return;
+
     try {
-        const querySnapshot = await window.getDocs(window.collection(window.db, "customers"));
+        const q = window.query(
+            window.collection(window.db, "customers"), 
+            window.where("ownerId", "==", user.uid)
+        );
+        const querySnapshot = await window.getDocs(q);
         customers = [];
         querySnapshot.forEach((docSnap) => {
             customers.push({ id: docSnap.id, ...docSnap.data() });
         });
         renderAllData();
     } catch (error) {
-        console.error("Ralat memuatkan data dari Firebase: ", error);
+        console.error("Ralat memuatkan data: ", error);
     }
 }
 
@@ -218,32 +227,18 @@ function createCustomerRow(cust, showEditButton = false) {
 
     const formattedDate = formatDateDisplay(cust.date);
 
-    let actionButtonsHTML = '';
-    if (showEditButton) {
-        actionButtonsHTML = `
-            <div class="action-btns">
-                <button class="btn-edit" onclick="editCustomer('${cust.id}')">
-                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                </button>
-                <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
-                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                </button>
-            </div>
-        `;
-    } else {
-        actionButtonsHTML = `
-            <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp
-            </button>
-        `;
-    }
+    let actionButtonsHTML = showEditButton ? `
+        <div class="action-btns">
+            <button class="btn-edit" onclick="editCustomer('${cust.id}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+            <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+        </div>
+    ` : `
+        <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+    `;
 
     const row = document.createElement('tr');
     row.innerHTML = `
-        <td>
-            <strong>${cust.name}</strong>
-            <span class="sub-text">${cust.phone}</span>
-        </td>
+        <td><strong>${cust.name}</strong><span class="sub-text">${cust.phone}</span></td>
         <td>${cust.product}</td>
         <td>RM${Number(cust.value).toLocaleString()}</td>
         <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
@@ -272,10 +267,7 @@ function renderAllData() {
             if(salesTableBody) {
                 const salesRow = document.createElement('tr');
                 salesRow.innerHTML = `
-                    <td>
-                        <strong>${cust.name}</strong>
-                        <span class="sub-text">${cust.phone}</span>
-                    </td>
+                    <td><strong>${cust.name}</strong><span class="sub-text">${cust.phone}</span></td>
                     <td>${cust.product}</td>
                     <td><strong>RM${Number(cust.value).toLocaleString()}</strong></td>
                     <td>${formatDateDisplay(cust.date)}</td>
@@ -284,12 +276,7 @@ function renderAllData() {
             }
         }
 
-        let isNeedsAttention = false;
-        if (cust.date < todayStr && cust.status !== 'Purchased' && cust.status !== 'Lost') {
-            isNeedsAttention = true;
-        } else if (cust.date === todayStr && cust.status !== 'Purchased' && cust.status !== 'Lost') {
-            isNeedsAttention = true;
-        }
+        let isNeedsAttention = (cust.date <= todayStr && cust.status !== 'Purchased' && cust.status !== 'Lost');
 
         if(customerTableBody) customerTableBody.appendChild(createCustomerRow(cust, false));
         if(allCustomersTableBody) allCustomersTableBody.appendChild(createCustomerRow(cust, true));
@@ -299,18 +286,11 @@ function renderAllData() {
             let badgeClass = cust.status === 'Follow-up' ? 'orange' : 'yellow';
             const followupRow = document.createElement('tr');
             followupRow.innerHTML = `
-                <td>
-                    <strong>${cust.name}</strong>
-                    <span class="sub-text">${cust.phone}</span>
-                </td>
+                <td><strong>${cust.name}</strong><span class="sub-text">${cust.phone}</span></td>
                 <td>${cust.product}</td>
                 <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
                 <td>${formatDateDisplay(cust.date)}</td>
-                <td>
-                    <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
-                        <i class="fa-brands fa-whatsapp"></i> WhatsApp Sekarang
-                    </button>
-                </td>
+                <td><button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp Sekarang</button></td>
             `;
             followupTableBody.appendChild(followupRow);
         }
@@ -326,10 +306,17 @@ function renderAllData() {
     if(salesTotalCount) salesTotalCount.innerText = purchasedCount;
 }
 
+// SIMPAN DENGAN SERTAKAN ownerId PENGGUNA YANG LOGIN
 if(addCustomerForm) {
     addCustomerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
+        const user = window.auth.currentUser;
+        if (!user) {
+            alert("Sila log masuk semula.");
+            return;
+        }
+
         const editDocId = editDocIdInput ? editDocIdInput.value : "";
         const custData = {
             name: document.getElementById('custName').value,
@@ -337,7 +324,8 @@ if(addCustomerForm) {
             product: document.getElementById('custProduct').value,
             value: Number(document.getElementById('custValue').value),
             status: document.getElementById('custStatus').value,
-            date: document.getElementById('custDate').value
+            date: document.getElementById('custDate').value,
+            ownerId: user.uid // IKAT DATA PADA AKAUN INI
         };
 
         try {
@@ -376,7 +364,6 @@ if(settingsForm) {
     });
 }
 
-// Pengesahan Firebase Auth State Terkini
 window.addEventListener('DOMContentLoaded', () => {
     const checkInterval = setInterval(() => {
         if (window.auth && window.onAuthStateChanged) {
@@ -384,11 +371,9 @@ window.addEventListener('DOMContentLoaded', () => {
             
             window.onAuthStateChanged(window.auth, (user) => {
                 if (user) {
-                    // Pengguna telah log masuk -> Sembunyikan skrin login & muat data
                     if(authScreen) authScreen.style.display = 'none';
                     fetchCustomersFromCloud();
                 } else {
-                    // Pengguna belum log masuk -> Paparkan skrin login
                     if(authScreen) authScreen.style.display = 'flex';
                 }
             });
@@ -396,7 +381,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 200);
 });
 
-// Proses Log Masuk / Daftar Melalui Borang Auth
 if(authForm) {
     authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
