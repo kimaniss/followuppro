@@ -1,3 +1,4 @@
+// Toggle Sidebar Mobile
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
 
@@ -38,7 +39,6 @@ function logoutUser() {
     if (confirm("Adakah anda pasti mahu log keluar?")) {
         if (window.auth) {
             window.signOut(window.auth).then(() => {
-                // Selepas logout, reload halaman untuk kembali ke skrin login
                 window.location.reload();
             }).catch((error) => {
                 console.error("Ralat logout: ", error);
@@ -59,11 +59,13 @@ const modalTitle = document.getElementById('modalTitle');
 const saveBtnText = document.getElementById('saveBtnText');
 const editDocIdInput = document.getElementById('editDocId');
 
+// Table Bodies
 const customerTableBody = document.getElementById('customerTableBody');
 const allCustomersTableBody = document.getElementById('allCustomersTableBody');
 const followupTableBody = document.getElementById('followupTableBody');
 const salesTableBody = document.getElementById('salesTableBody');
 
+// Metrics & Header Elements
 const totalCustomersElem = document.getElementById('totalCustomers');
 const needFollowupCountElem = document.getElementById('needFollowupCount');
 const followupCountBadge = document.getElementById('followupCountBadge');
@@ -75,22 +77,26 @@ const pageTitle = document.getElementById('pageTitle');
 const headerUserName = document.getElementById('headerUserName');
 const greetingName = document.getElementById('greetingName');
 
+// Setting Input Elements
 const settingOwnerName = document.getElementById('settingOwnerName');
 const settingBusinessName = document.getElementById('settingBusinessName');
 const settingDefaultMessage = document.getElementById('settingDefaultMessage');
 
+// View Sections
 const viewDashboard = document.getElementById('viewDashboard');
 const viewCustomers = document.getElementById('viewCustomers');
 const viewFollowups = document.getElementById('viewFollowups');
 const viewSales = document.getElementById('viewSales');
 const viewSettings = document.getElementById('viewSettings');
 
+// Menu Elements
 const menuDashboard = document.getElementById('menuDashboard');
 const menuCustomers = document.getElementById('menuCustomers');
 const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
 
+// Buka Modal untuk Tambah Baru
 if (openModalBtn) {
     openModalBtn.addEventListener('click', () => {
         if (modalTitle) modalTitle.innerText = "Tambah Customer Baru";
@@ -104,6 +110,7 @@ if (openModalBtn) {
 if (closeModalBtn) closeModalBtn.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
 if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
 
+// Fungsi Pertukaran Paparan Halaman (Switch View)
 function switchView(viewName) {
     if(viewDashboard) viewDashboard.style.display = 'none';
     if(viewCustomers) viewCustomers.style.display = 'none';
@@ -156,7 +163,7 @@ if (settingDefaultMessage) settingDefaultMessage.value = appSettings.message;
 if (headerUserName) headerUserName.innerText = appSettings.owner;
 if (greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
 
-// AMBIL DATA BERDASARKAN USER UID SAHAJA
+// AMBIL DATA BERDASARKAN USER UID SAHAJA DARI FIREBASE
 async function fetchCustomersFromCloud() {
     const user = window.auth.currentUser;
     if (!user) return;
@@ -186,13 +193,34 @@ function formatDateDisplay(dateString) {
     return dateString;
 }
 
-function openWhatsApp(name, phone, product) {
+// STEP 11: FUNGSI WHATSAPP KLIK-KE-CHAT DENGAN KEMAS KINI TARIKH AUTOMATIK
+async function openWhatsApp(id, name, phone, product) {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     let template = settingDefaultMessage ? settingDefaultMessage.value : appSettings.message;
-    const message = template.replace('[Nama]', name).replace('[Produk]', product);
+    
+    let message = template.replace('[Nama]', name).replace('[Produk]', product);
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+    
+    // Buka WhatsApp di tab baharu
     window.open(whatsappUrl, '_blank');
+
+    // Kemas kini tarikh follow-up seterusnya 7 hari ke hadapan secara automatik
+    try {
+        const nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        const nextDateStr = nextWeek.toISOString().split('T')[0];
+
+        const docRef = window.doc(window.db, "customers", id);
+        await window.updateDoc(docRef, {
+            date: nextDateStr,
+            status: "Follow-up"
+        });
+
+        await fetchCustomersFromCloud();
+    } catch (error) {
+        console.error("Ralat mengemas kini tarikh automatik selepas WhatsApp: ", error);
+    }
 }
 
 function editCustomer(id) {
@@ -234,10 +262,10 @@ function createCustomerRow(cust, showEditButton = false) {
     let actionButtonsHTML = showEditButton ? `
         <div class="action-btns">
             <button class="btn-edit" onclick="editCustomer('${cust.id}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-            <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+            <button class="btn-whatsapp" onclick="openWhatsApp('${cust.id}', '${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
         </div>
     ` : `
-        <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+        <button class="btn-whatsapp" onclick="openWhatsApp('${cust.id}', '${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
     `;
 
     const row = document.createElement('tr');
@@ -294,7 +322,7 @@ function renderAllData() {
                 <td>${cust.product}</td>
                 <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
                 <td>${formatDateDisplay(cust.date)}</td>
-                <td><button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp Sekarang</button></td>
+                <td><button class="btn-whatsapp" onclick="openWhatsApp('${cust.id}', '${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp Sekarang</button></td>
             `;
             followupTableBody.appendChild(followupRow);
         }
@@ -310,7 +338,7 @@ function renderAllData() {
     if(salesTotalCount) salesTotalCount.innerText = purchasedCount;
 }
 
-// SIMPAN DENGAN SERTAKAN ownerId PENGGUNA YANG LOGIN
+// Simpan data dengan menyertakan ownerId pengguna yang sah
 if(addCustomerForm) {
     addCustomerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -329,7 +357,7 @@ if(addCustomerForm) {
             value: Number(document.getElementById('custValue').value),
             status: document.getElementById('custStatus').value,
             date: document.getElementById('custDate').value,
-            ownerId: user.uid // IKAT DATA PADA AKAUN INI
+            ownerId: user.uid
         };
 
         try {
