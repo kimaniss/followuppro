@@ -30,7 +30,11 @@
     --whatsapp-hover: #22BF5B;
 }
 
-body {
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
     background-color: var(--bg-color);
     color: var(--text-main);
 }
@@ -39,6 +43,8 @@ body {
 .app-container {
     display: flex;
     min-height: 100vh;
+    width: 100%;
+    position: relative;
 }
 
 /* Sidebar Styling */
@@ -111,6 +117,7 @@ body {
     margin-left: 260px;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 /* Top Header */
@@ -287,6 +294,7 @@ body {
 .table-responsive {
     width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
@@ -348,6 +356,7 @@ body {
     align-items: center;
     gap: 6px;
     transition: background-color 0.2s;
+    white-space: nowrap;
 }
 .btn-whatsapp:hover {
     background-color: var(--whatsapp-hover);
@@ -388,7 +397,7 @@ body {
     color: var(--primary);
 }
 
-/* Responsive Styles */
+/* --- RESPONSIVE STYLES (MOBILE & TABLET) --- */
 @media (max-width: 1024px) {
     .content-grid {
         grid-template-columns: 1fr;
@@ -398,30 +407,51 @@ body {
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
+        width: 260px;
     }
+    
     .sidebar.active {
         transform: translateX(0);
     }
+
     .main-content {
         margin-left: 0;
+        width: 100%;
+        min-width: 0;
     }
+
+    .top-header {
+        padding: 0 16px;
+        width: 100%;
+    }
+
     .menu-toggle {
         display: block;
     }
-    .top-header {
-        padding: 0 16px;
-    }
+
     .dashboard-body {
         padding: 16px;
+        width: 100%;
     }
-}
 
-/* Tambah kod ini di bawah sekali dalam style.css */
-html, body {
-    overflow-x: hidden;
-    width: 100%;
-}
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        width: 100%;
+    }
 
-* {
-    max-width: 100vw; /* Memastikan tiada elemen lebih lebar dari skrin */
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        width: 100%;
+    }
+
+    .card, .section-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .data-table {
+        min-width: 500px;
+    }
 }
