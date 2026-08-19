@@ -19,14 +19,14 @@
                 <h2>FOLLOWUP<span>PRO</span></h2>
             </div>
             <ul class="sidebar-menu">
-                <li class="active">
-                    <a href="#"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <li id="menuDashboard" class="active">
+                    <a href="#" onclick="switchView('dashboard')"><i class="fa-solid fa-house"></i> Dashboard</a>
                 </li>
-                <li>
-                    <a href="#"><i class="fa-solid fa-users"></i> Customers</a>
+                <li id="menuCustomers">
+                    <a href="#" onclick="switchView('customers')"><i class="fa-solid fa-users"></i> Customers</a>
                 </li>
-                <li>
-                    <a href="#"><i class="fa-solid fa-clock-rotate-left"></i> Follow-ups</a>
+                <li id="menuFollowups">
+                    <a href="#" onclick="switchView('followups')"><i class="fa-solid fa-clock-rotate-left"></i> Follow-ups</a>
                 </li>
                 <li>
                     <a href="#"><i class="fa-solid fa-chart-line"></i> Sales</a>
@@ -43,7 +43,7 @@
             <header class="top-header">
                 <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
                 <div class="header-title">
-                    <h1>Dashboard</h1>
+                    <h1 id="pageTitle">Dashboard</h1>
                 </div>
                 <div class="header-user">
                     <span class="user-name">Ahmad Bisnes</span>
@@ -51,121 +51,158 @@
                 </div>
             </header>
 
-            <!-- Dashboard Body -->
-            <div class="dashboard-body">
-                <!-- Greeting Banner -->
-                <div class="welcome-banner">
-                    <h2>GOOD MORNING 👋</h2>
-                    <p>Jangan biarkan customer hilang.</p>
-                </div>
+            <!-- VIEW 1: DASHBOARD -->
+            <div id="viewDashboard" class="view-section">
+                <div class="dashboard-body">
+                    <!-- Greeting Banner -->
+                    <div class="welcome-banner">
+                        <h2>GOOD MORNING 👋</h2>
+                        <p>Jangan biarkan customer hilang.</p>
+                    </div>
 
-                <!-- Stats Metric Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-label">Total Customers</span>
-                            <h3 class="stat-value" id="totalCustomers">128</h3>
+                    <!-- Stats Metric Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Total Customers</span>
+                                <h3 class="stat-value" id="totalCustomers">128</h3>
+                            </div>
+                            <div class="stat-icon blue">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
                         </div>
-                        <div class="stat-icon blue">
-                            <i class="fa-solid fa-users"></i>
+
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Need Follow-up</span>
+                                <h3 class="stat-value" id="needFollowupCount">17</h3>
+                            </div>
+                            <div class="stat-icon orange">
+                                <i class="fa-solid fa-bell"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Total Sales</span>
+                                <h3 class="stat-value">RM12,450</h3>
+                            </div>
+                            <div class="stat-icon green">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Purchased</span>
+                                <h3 class="stat-value">64</h3>
+                            </div>
+                            <div class="stat-icon purple">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-label">Need Follow-up</span>
-                            <h3 class="stat-value">17</h3>
-                        </div>
-                        <div class="stat-icon orange">
-                            <i class="fa-solid fa-bell"></i>
-                        </div>
+                    <!-- ACTION BAR: Tambah Customer Button -->
+                    <div class="action-bar" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 16px; font-weight: 600; color: var(--primary);">Senarai Customer</h3>
+                        <button id="openModalBtn" class="btn-primary" style="background-color: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-plus"></i> Tambah Customer
+                        </button>
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-label">Total Sales</span>
-                            <h3 class="stat-value">RM12,450</h3>
+                    <!-- Content Grid (Customer Management Table) -->
+                    <div class="card section-card" style="margin-bottom: 32px;">
+                        <div class="card-header">
+                            <h3>CUSTOMER MANAGEMENT</h3>
+                            <span class="badge red">Live Data MVP</span>
                         </div>
-                        <div class="stat-icon green">
-                            <i class="fa-solid fa-wallet"></i>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama & WhatsApp</th>
+                                        <th>Produk / Servis</th>
+                                        <th>Nilai (RM)</th>
+                                        <th>Status</th>
+                                        <th>Next Follow-up</th>
+                                        <th>Tindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customerTableBody">
+                                    <!-- Dinamik oleh JS -->
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-label">Purchased</span>
-                            <h3 class="stat-value">64</h3>
-                        </div>
-                        <div class="stat-icon purple">
-                            <i class="fa-solid fa-bag-shopping"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ACTION BAR: Tambah Customer Button -->
-                <div class="action-bar" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="font-size: 16px; font-weight: 600; color: var(--primary);">Senarai Customer</h3>
-                    <button id="openModalBtn" class="btn-primary" style="background-color: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-plus"></i> Tambah Customer
-                    </button>
-                </div>
-
-                <!-- Content Grid (Customer Management Table) -->
-                <div class="card section-card" style="margin-bottom: 32px;">
-                    <div class="card-header">
-                        <h3>CUSTOMER MANAGEMENT</h3>
-                        <span class="badge red">Live Data MVP</span>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Nama & WhatsApp</th>
-                                    <th>Produk / Servis</th>
-                                    <th>Nilai (RM)</th>
-                                    <th>Status</th>
-                                    <th>Next Follow-up</th>
-                                    <th>Tindakan</th>
-                                </tr>
-                            </thead>
-                            <tbody id="customerTableBody">
-                                <!-- Data contoh sedia ada -->
-                                <tr>
-                                    <td>
-                                        <strong>Ahmad Rahman</strong>
-                                        <span class="sub-text">60123456789</span>
-                                    </td>
-                                    <td>Website Package</td>
-                                    <td>RM850</td>
-                                    <td><span class="status-badge orange">Follow-up</span></td>
-                                    <td>19/08/2026</td>
-                                    <td>
-                                        <button class="btn-whatsapp">
-                                            <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Siti Aminah</strong>
-                                        <span class="sub-text">60198765432</span>
-                                    </td>
-                                    <td>Landing Page</td>
-                                    <td>RM350</td>
-                                    <td><span class="status-badge yellow">Interested</span></td>
-                                    <td>20/08/2026</td>
-                                    <td>
-                                        <button class="btn-whatsapp">
-                                            <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
-
             </div>
+
+            <!-- VIEW 2: CUSTOMERS (Senarai Penuh) -->
+            <div id="viewCustomers" class="view-section" style="display: none;">
+                <div class="dashboard-body">
+                    <div class="welcome-banner">
+                        <h2>SEMUA CUSTOMER 👥</h2>
+                        <p>Uruskan senarai pangkalan data pelanggan anda.</p>
+                    </div>
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h3>KESELURUHAN PELANGGAN</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama & WhatsApp</th>
+                                        <th>Produk / Servis</th>
+                                        <th>Nilai (RM)</th>
+                                        <th>Status</th>
+                                        <th>Next Follow-up</th>
+                                        <th>Tindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allCustomersTableBody">
+                                    <!-- Dinamik oleh JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: FOLLOW-UPS (Sistem Peringatan Tindakan Susulan) -->
+            <div id="viewFollowups" class="view-section" style="display: none;">
+                <div class="dashboard-body">
+                    <div class="welcome-banner">
+                        <h2>SENARAI FOLLOW-UP 🔔</h2>
+                        <p>Customer yang perlu dihubungi segera supaya sales tidak terlepas.</p>
+                    </div>
+                    
+                    <div class="card section-card">
+                        <div class="card-header">
+                            <h3>TINDAKAN SUSULAN (OVERDUE & HARI INI)</h3>
+                            <span class="badge red" id="followupCountBadge">0 Pending</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama & WhatsApp</th>
+                                        <th>Produk / Servis</th>
+                                        <th>Status</th>
+                                        <th>Tarikh Follow-up</th>
+                                        <th>Tindakan WhatsApp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="followupTableBody">
+                                    <!-- Dinamik oleh JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -217,7 +254,7 @@
         </div>
     </div>
 
-    <!-- Pautan ke fail JavaScript luaran -->
+    <!-- Pautan Script -->
     <script src="script.js"></script>
 </body>
 </html>
