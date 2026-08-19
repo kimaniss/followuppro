@@ -178,6 +178,62 @@ function editCustomer(index) {
     modal.style.display = 'flex';
 }
 
+// Fungsi Pembantu untuk Membina Baris Jadual (Sama ada dengan atau tanpa butang Edit)
+function createCustomerRow(cust, index, showEditButton = false) {
+    let badgeClass = 'yellow';
+    if(cust.status === 'Follow-up') badgeClass = 'orange';
+    if(cust.status === 'Purchased') badgeClass = 'green';
+    if(cust.status === 'Lost') badgeClass = 'red';
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    let followUpBadge = '';
+
+    if (cust.date < todayStr && cust.status !== 'Purchased' && cust.status !== 'Lost') {
+        followUpBadge = `<span class="status-badge red" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Overdue</span>`;
+    } else if (cust.date === todayStr && cust.status !== 'Purchased' && cust.status !== 'Lost') {
+        followUpBadge = `<span class="status-badge orange" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Hari Ini</span>`;
+    } else {
+        followUpBadge = `<span class="status-badge green" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Akan Datang</span>`;
+    }
+
+    const formattedDate = formatDateDisplay(cust.date);
+
+    // Tetapkan tindakan: jika showEditButton true, paparkan butang Edit + WhatsApp. Jika false, hanya WhatsApp sahaja.
+    let actionButtonsHTML = '';
+    if (showEditButton) {
+        actionButtonsHTML = `
+            <div class="action-btns">
+                <button class="btn-edit" onclick="editCustomer(${index})">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                </button>
+                <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </button>
+            </div>
+        `;
+    } else {
+        actionButtonsHTML = `
+            <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+            </button>
+        `;
+    }
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>
+            <strong>${cust.name}</strong>
+            <span class="sub-text">${cust.phone}</span>
+        </td>
+        <td>${cust.product}</td>
+        <td>RM${Number(cust.value).toLocaleString()}</td>
+        <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
+        <td>${formattedDate} ${followUpBadge}</td>
+        <td>${actionButtonsHTML}</td>
+    `;
+    return row;
+}
+
 // Fungsi Render Utama untuk Semua Jadual & Metrik
 function renderAllData() {
     customerTableBody.innerHTML = '';
@@ -191,11 +247,6 @@ function renderAllData() {
     let purchasedCount = 0;
 
     customers.forEach((cust, index) => {
-        let badgeClass = 'yellow';
-        if(cust.status === 'Follow-up') badgeClass = 'orange';
-        if(cust.status === 'Purchased') badgeClass = 'green';
-        if(cust.status === 'Lost') badgeClass = 'red';
-
         if (cust.status === 'Purchased') {
             totalRevenue += Number(cust.value);
             purchasedCount++;
@@ -213,53 +264,23 @@ function renderAllData() {
             salesTableBody.appendChild(salesRow);
         }
 
-        let followUpBadge = '';
         let isNeedsAttention = false;
-
         if (cust.date < todayStr && cust.status !== 'Purchased' && cust.status !== 'Lost') {
-            followUpBadge = `<span class="status-badge red" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Overdue</span>`;
             isNeedsAttention = true;
         } else if (cust.date === todayStr && cust.status !== 'Purchased' && cust.status !== 'Lost') {
-            followUpBadge = `<span class="status-badge orange" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Hari Ini</span>`;
             isNeedsAttention = true;
-        } else {
-            followUpBadge = `<span class="status-badge green" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Akan Datang</span>`;
         }
 
-        const formattedDate = formatDateDisplay(cust.date);
+        // 1. Dashboard: Hantar false (Tiada butang edit)
+        customerTableBody.appendChild(createCustomerRow(cust, index, false));
 
-        // Tambah butang Edit berserta butang WhatsApp
-        const rowHTML = `
-            <td>
-                <strong>${cust.name}</strong>
-                <span class="sub-text">${cust.phone}</span>
-            </td>
-            <td>${cust.product}</td>
-            <td>RM${Number(cust.value).toLocaleString()}</td>
-            <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
-            <td>${formattedDate} ${followUpBadge}</td>
-            <td>
-                <div class="action-btns">
-                    <button class="btn-edit" onclick="editCustomer(${index})">
-                        <i class="fa-solid fa-pen-to-square"></i> Edit
-                    </button>
-                    <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
-                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                    </button>
-                </div>
-            </td>
-        `;
+        // 2. Menu Customers Management: Hantar true (Wujud butang edit)
+        allCustomersTableBody.appendChild(createCustomerRow(cust, index, true));
 
-        const row1 = document.createElement('tr');
-        row1.innerHTML = rowHTML;
-        customerTableBody.appendChild(row1);
-
-        const row2 = document.createElement('tr');
-        row2.innerHTML = rowHTML;
-        allCustomersTableBody.appendChild(row2);
-
+        // 3. Menu Follow-ups
         if (isNeedsAttention) {
             followupCount++;
+            let badgeClass = cust.status === 'Follow-up' ? 'orange' : 'yellow';
             const followupRow = document.createElement('tr');
             followupRow.innerHTML = `
                 <td>
@@ -268,7 +289,7 @@ function renderAllData() {
                 </td>
                 <td>${cust.product}</td>
                 <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
-                <td>${formattedDate} ${followUpBadge}</td>
+                <td>${formatDateDisplay(cust.date)}</td>
                 <td>
                     <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
                         <i class="fa-brands fa-whatsapp"></i> WhatsApp Sekarang
@@ -304,10 +325,8 @@ addCustomerForm.addEventListener('submit', function(e) {
     };
 
     if (editIndex === -1) {
-        // Tambah customer baharu
         customers.unshift(custData);
     } else {
-        // Kemas kini customer sedia ada
         customers[editIndex] = custData;
     }
 
