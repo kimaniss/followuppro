@@ -13,6 +13,9 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 const cancelModalBtn = document.getElementById('cancelModalBtn');
 const addCustomerForm = document.getElementById('addCustomerForm');
 const settingsForm = document.getElementById('settingsForm');
+const modalTitle = document.getElementById('modalTitle');
+const saveBtnText = document.getElementById('saveBtnText');
+const editIndexInput = document.getElementById('editIndex');
 
 // Table Bodies
 const customerTableBody = document.getElementById('customerTableBody');
@@ -51,8 +54,16 @@ const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
 
-// Buka & Tutup Modal
-openModalBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
+// Buka Modal untuk Tambah Baru
+openModalBtn.addEventListener('click', () => {
+    modalTitle.innerText = "Tambah Customer Baru";
+    saveBtnText.innerText = "Simpan Customer";
+    editIndexInput.value = "-1";
+    addCustomerForm.reset();
+    modal.style.display = 'flex';
+});
+
+// Tutup Modal
 closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
 cancelModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
 
@@ -112,14 +123,6 @@ let customers = JSON.parse(localStorage.getItem('followuppro_customers')) || [
         value: 350,
         status: "Purchased",
         date: "2026-08-18"
-    },
-    {
-        name: "Ali Hassan",
-        phone: "60112233445",
-        product: "E-Commerce Setup",
-        value: 1200,
-        status: "Purchased",
-        date: "2026-08-15"
     }
 ];
 
@@ -130,19 +133,16 @@ let appSettings = JSON.parse(localStorage.getItem('followuppro_settings')) || {
     message: "Hi [Nama] 👋 Saya nak follow up berkenaan [Produk] yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?"
 };
 
-// Set nilai awal pada form settings & header
 settingOwnerName.value = appSettings.owner;
 settingBusinessName.value = appSettings.business;
 settingDefaultMessage.value = appSettings.message;
 headerUserName.innerText = appSettings.owner;
-greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
+greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
 
-// Fungsi Simpan Data ke LocalStorage
 function saveToLocalStorage() {
     localStorage.setItem('followuppro_customers', JSON.stringify(customers));
 }
 
-// Tukar format YYYY-MM-DD kepada DD/MM/YYYY
 function formatDateDisplay(dateString) {
     if (!dateString) return '';
     const parts = dateString.split('-');
@@ -152,15 +152,30 @@ function formatDateDisplay(dateString) {
     return dateString;
 }
 
-// Fungsi Buka WhatsApp Click-to-Chat Mengikut Template Tetapan
 function openWhatsApp(name, phone, product) {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     let template = settingDefaultMessage.value || appSettings.message;
-    
     const message = template.replace('[Nama]', name).replace('[Produk]', product);
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
+}
+
+// Fungsi Buka Borang untuk Edit Customer
+function editCustomer(index) {
+    const cust = customers[index];
+    
+    document.getElementById('custName').value = cust.name;
+    document.getElementById('custPhone').value = cust.phone;
+    document.getElementById('custProduct').value = cust.product;
+    document.getElementById('custValue').value = cust.value;
+    document.getElementById('custStatus').value = cust.status;
+    document.getElementById('custDate').value = cust.date;
+    
+    editIndexInput.value = index;
+    modalTitle.innerText = "Edit Customer";
+    saveBtnText.innerText = "Kemas Kini Customer";
+    modal.style.display = 'flex';
 }
 
 // Fungsi Render Utama untuk Semua Jadual & Metrik
@@ -175,7 +190,7 @@ function renderAllData() {
     let totalRevenue = 0;
     let purchasedCount = 0;
 
-    customers.forEach((cust) => {
+    customers.forEach((cust, index) => {
         let badgeClass = 'yellow';
         if(cust.status === 'Follow-up') badgeClass = 'orange';
         if(cust.status === 'Purchased') badgeClass = 'green';
@@ -213,6 +228,7 @@ function renderAllData() {
 
         const formattedDate = formatDateDisplay(cust.date);
 
+        // Tambah butang Edit berserta butang WhatsApp
         const rowHTML = `
             <td>
                 <strong>${cust.name}</strong>
@@ -223,9 +239,14 @@ function renderAllData() {
             <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
             <td>${formattedDate} ${followUpBadge}</td>
             <td>
-                <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
-                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                </button>
+                <div class="action-btns">
+                    <button class="btn-edit" onclick="editCustomer(${index})">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+                    <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </button>
+                </div>
             </td>
         `;
 
@@ -268,11 +289,12 @@ function renderAllData() {
     salesTotalCount.innerText = purchasedCount;
 }
 
-// Tambah Customer Baru & Simpan
+// Submit Borang: Simpan Baru ATAU Kemas Kini Data Sedia Ada
 addCustomerForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const newCust = {
+    const editIndex = parseInt(editIndexInput.value);
+    const custData = {
         name: document.getElementById('custName').value,
         phone: document.getElementById('custPhone').value,
         product: document.getElementById('custProduct').value,
@@ -281,7 +303,14 @@ addCustomerForm.addEventListener('submit', function(e) {
         date: document.getElementById('custDate').value
     };
 
-    customers.unshift(newCust);
+    if (editIndex === -1) {
+        // Tambah customer baharu
+        customers.unshift(custData);
+    } else {
+        // Kemas kini customer sedia ada
+        customers[editIndex] = custData;
+    }
+
     saveToLocalStorage();
     renderAllData();
 
@@ -289,7 +318,7 @@ addCustomerForm.addEventListener('submit', function(e) {
     modal.style.display = 'none';
 });
 
-// Simpan Tetapan Profil & LocalStorage
+// Simpan Tetapan Profil
 settingsForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -300,7 +329,7 @@ settingsForm.addEventListener('submit', function(e) {
     localStorage.setItem('followuppro_settings', JSON.stringify(appSettings));
     
     headerUserName.innerText = appSettings.owner;
-    greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
+    greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
     
     alert('Tetapan dan profil perniagaan berjaya disimpan!');
     switchView('dashboard');
