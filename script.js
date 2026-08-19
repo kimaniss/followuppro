@@ -54,14 +54,16 @@ const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
 
-// Buka Modal untuk Tambah Baru
-openModalBtn.addEventListener('click', () => {
-    if (modalTitle) modalTitle.innerText = "Tambah Customer Baru";
-    if (saveBtnText) saveBtnText.innerText = "Simpan Customer";
-    if (editDocIdInput) editDocIdInput.value = ""; 
-    if (addCustomerForm) addCustomerForm.reset();
-    if (modal) modal.style.display = 'flex';
-});
+// Buka Modal untuk Tambah Baru (Dengan perlindungan ralat)
+if (openModalBtn) {
+    openModalBtn.addEventListener('click', () => {
+        if (modalTitle) modalTitle.innerText = "Tambah Customer Baru";
+        if (saveBtnText) saveBtnText.innerText = "Simpan Customer";
+        if (editDocIdInput) editDocIdInput.value = "";
+        if (addCustomerForm) addCustomerForm.reset();
+        if (modal) modal.style.display = 'flex';
+    });
+}
 
 // Tutup Modal
 closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
