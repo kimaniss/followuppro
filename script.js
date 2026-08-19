@@ -135,7 +135,7 @@ settingOwnerName.value = appSettings.owner;
 settingBusinessName.value = appSettings.business;
 settingDefaultMessage.value = appSettings.message;
 headerUserName.innerText = appSettings.owner;
-greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
 
 // Fungsi Simpan Data ke LocalStorage
 function saveToLocalStorage() {
@@ -300,7 +300,7 @@ settingsForm.addEventListener('submit', function(e) {
     localStorage.setItem('followuppro_settings', JSON.stringify(appSettings));
     
     headerUserName.innerText = appSettings.owner;
-    greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+    greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
     
     alert('Tetapan dan profil perniagaan berjaya disimpan!');
     switchView('dashboard');
