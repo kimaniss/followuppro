@@ -56,7 +56,7 @@
                 <div class="dashboard-body">
                     <!-- Greeting Banner -->
                     <div class="welcome-banner">
-                        <h2 id="greetingName">WELCOME 👋</h2>
+                        <h2 id="greetingName">GOOD MORNING 👋</h2>
                         <p>Jangan biarkan customer hilang.</p>
                     </div>
 
@@ -65,7 +65,7 @@
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Total Customers</span>
-                                <h3 class="stat-value" id="totalCustomers">128</h3>
+                                <h3 class="stat-value" id="totalCustomers">0</h3>
                             </div>
                             <div class="stat-icon blue">
                                 <i class="fa-solid fa-users"></i>
@@ -75,7 +75,7 @@
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Need Follow-up</span>
-                                <h3 class="stat-value" id="needFollowupCount">17</h3>
+                                <h3 class="stat-value" id="needFollowupCount">0</h3>
                             </div>
                             <div class="stat-icon orange">
                                 <i class="fa-solid fa-bell"></i>
@@ -85,7 +85,7 @@
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Total Sales</span>
-                                <h3 class="stat-value" id="totalSalesDisplay">RM12,450</h3>
+                                <h3 class="stat-value" id="totalSalesDisplay">RM0</h3>
                             </div>
                             <div class="stat-icon green">
                                 <i class="fa-solid fa-wallet"></i>
@@ -95,7 +95,7 @@
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-label">Purchased</span>
-                                <h3 class="stat-value" id="totalPurchasedCount">64</h3>
+                                <h3 class="stat-value" id="totalPurchasedCount">0</h3>
                             </div>
                             <div class="stat-icon purple">
                                 <i class="fa-solid fa-bag-shopping"></i>
@@ -170,7 +170,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: FOLLOW-UPS (Sistem Peringatan Tindakan Susulan) -->
+            <!-- VIEW 3: FOLLOW-UPS -->
             <div id="viewFollowups" class="view-section" style="display: none;">
                 <div class="dashboard-body">
                     <div class="welcome-banner">
@@ -202,7 +202,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 4: SALES (Jejak Jualan & Pendapatan) -->
+            <!-- VIEW 4: SALES -->
             <div id="viewSales" class="view-section" style="display: none;">
                 <div class="dashboard-body">
                     <div class="welcome-banner">
@@ -253,7 +253,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 5: SETTINGS (Tetapan Akaun & Profil) -->
+            <!-- VIEW 5: SETTINGS -->
             <div id="viewSettings" class="view-section" style="display: none;">
                 <div class="dashboard-body">
                     <div class="welcome-banner">
@@ -267,15 +267,15 @@
                         <form id="settingsForm">
                             <div style="margin-bottom: 16px;">
                                 <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Nama Pemilik / Bisnes</label>
-                                <input type="text" id="settingOwnerName" value="Ahmad Bisnes" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
+                                <input type="text" id="settingOwnerName" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
                             </div>
                             <div style="margin-bottom: 16px;">
                                 <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Nama Bisnes / Jenama</label>
-                                <input type="text" id="settingBusinessName" value="FOLLOWUPPRO Agency" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
+                                <input type="text" id="settingBusinessName" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
                             </div>
                             <div style="margin-bottom: 24px;">
                                 <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Mesej Automatik WhatsApp Default</label>
-                                <textarea id="settingDefaultMessage" rows="3" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">Hi [Nama] 👋 Saya nak follow up berkenaan [Produk] yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?</textarea>
+                                <textarea id="settingDefaultMessage" rows="3" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;"></textarea>
                             </div>
                             <button type="submit" style="background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Simpan Tetapan</button>
                         </form>
@@ -286,14 +286,15 @@
         </main>
     </div>
 
-    <!-- MODAL / POPUP TAMBAH CUSTOMER -->
+    <!-- MODAL / POPUP TAMBAH ATAU EDIT CUSTOMER -->
     <div id="customerModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 16px;">
         <div class="modal-content" style="background: white; width: 100%; max-width: 500px; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="font-size: 16px; font-weight: 600; color: var(--primary);">Tambah Customer Baru</h3>
+                <h3 id="modalTitle" style="font-size: 16px; font-weight: 600; color: var(--primary);">Tambah Customer Baru</h3>
                 <button id="closeModalBtn" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="addCustomerForm">
+                <input type="hidden" id="editIndex" value="-1">
                 <div style="margin-bottom: 14px;">
                     <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Nama Customer</label>
                     <input type="text" id="custName" required placeholder="Cth: Ali Ahmad" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
@@ -328,7 +329,7 @@
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
                     <button type="button" id="cancelModalBtn" style="background: #E2E8F0; color: var(--text-main); border: none; padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Batal</button>
-                    <button type="submit" style="background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Simpan Customer</button>
+                    <button type="submit" id="saveBtnText" style="background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Simpan Customer</button>
                 </div>
             </form>
         </div>
