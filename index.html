@@ -31,8 +31,8 @@
                 <li id="menuSales">
                     <a href="#" onclick="switchView('sales')"><i class="fa-solid fa-chart-line"></i> Sales</a>
                 </li>
-                <li>
-                    <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+                <li id="menuSettings">
+                    <a href="#" onclick="switchView('settings')"><i class="fa-solid fa-gear"></i> Settings</a>
                 </li>
             </ul>
         </aside>
@@ -46,7 +46,7 @@
                     <h1 id="pageTitle">Dashboard</h1>
                 </div>
                 <div class="header-user">
-                    <span class="user-name">Ahmad Bisnes</span>
+                    <span class="user-name" id="headerUserName">Ahmad Bisnes</span>
                     <div class="user-avatar">AB</div>
                 </div>
             </header>
@@ -56,7 +56,7 @@
                 <div class="dashboard-body">
                     <!-- Greeting Banner -->
                     <div class="welcome-banner">
-                        <h2>GOOD MORNING 👋</h2>
+                        <h2 id="greetingName">GOOD MORNING 👋</h2>
                         <p>Jangan biarkan customer hilang.</p>
                     </div>
 
@@ -209,8 +209,6 @@
                         <h2>PRESTASI SALES 💰</h2>
                         <p>Semak jumlah jualan dan senarai customer yang telah berjaya menutup pembelian.</p>
                     </div>
-
-                    <!-- Sales Metric Card -->
                     <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 24px;">
                         <div class="stat-card">
                             <div class="stat-info">
@@ -231,7 +229,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="card section-card">
                         <div class="card-header">
                             <h3>SENARAI CUSTOMER BERJAYA BELI (PURCHASED)</h3>
@@ -252,6 +249,36 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 5: SETTINGS (Tetapan Akaun & Profil) -->
+            <div id="viewSettings" class="view-section" style="display: none;">
+                <div class="dashboard-body">
+                    <div class="welcome-banner">
+                        <h2>TETAPAN AKAUN ⚙️</h2>
+                        <p>Kemas kini maklumat profil perniagaan dan tetapan aplikasi anda.</p>
+                    </div>
+                    <div class="card section-card" style="max-width: 600px; padding: 24px;">
+                        <div class="card-header" style="padding: 0 0 16px 0; margin-bottom: 20px;">
+                            <h3>PROFIL USAHAWAN & BISNES</h3>
+                        </div>
+                        <form id="settingsForm">
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Nama Pemilik / Bisnes</label>
+                                <input type="text" id="settingOwnerName" value="Ahmad Bisnes" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Nama Bisnes / Jenama</label>
+                                <input type="text" id="settingBusinessName" value="FOLLOWUPPRO Agency" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">
+                            </div>
+                            <div style="margin-bottom: 24px;">
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Mesej Automatik WhatsApp Default</label>
+                                <textarea id="settingDefaultMessage" rows="3" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px;">Hi [Nama] 👋 Saya nak follow up berkenaan [Produk] yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?</textarea>
+                            </div>
+                            <button type="submit" style="background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Simpan Tetapan</button>
+                        </form>
                     </div>
                 </div>
             </div>
