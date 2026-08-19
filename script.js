@@ -12,13 +12,63 @@ const openModalBtn = document.getElementById('openModalBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const cancelModalBtn = document.getElementById('cancelModalBtn');
 const addCustomerForm = document.getElementById('addCustomerForm');
+
+// Table Bodies
 const customerTableBody = document.getElementById('customerTableBody');
+const allCustomersTableBody = document.getElementById('allCustomersTableBody');
+const followupTableBody = document.getElementById('followupTableBody');
+
+// Metrics Elements
 const totalCustomersElem = document.getElementById('totalCustomers');
+const needFollowupCountElem = document.getElementById('needFollowupCount');
+const followupCountBadge = document.getElementById('followupCountBadge');
+const pageTitle = document.getElementById('pageTitle');
+
+// View Sections
+const viewDashboard = document.getElementById('viewDashboard');
+const viewCustomers = document.getElementById('viewCustomers');
+const viewFollowups = document.getElementById('viewFollowups');
+
+// Menu Elements
+const menuDashboard = document.getElementById('menuDashboard');
+const menuCustomers = document.getElementById('menuCustomers');
+const menuFollowups = document.getElementById('menuFollowups');
 
 // Buka & Tutup Modal
 openModalBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
 closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
 cancelModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+
+// Fungsi Pertukaran Paparan Halaman (Switch View)
+function switchView(viewName) {
+    // Sembunyikan semua view
+    viewDashboard.style.display = 'none';
+    viewCustomers.style.display = 'none';
+    viewFollowups.style.display = 'none';
+
+    // Buang kelas active pada semua menu sidebar
+    menuDashboard.classList.remove('active');
+    menuCustomers.classList.remove('active');
+    menuFollowups.classList.remove('active');
+
+    // Paparkan view yang dipilih
+    if (viewName === 'dashboard') {
+        viewDashboard.style.display = 'block';
+        menuDashboard.classList.add('active');
+        pageTitle.innerText = 'Dashboard';
+    } else if (viewName === 'customers') {
+        viewCustomers.style.display = 'block';
+        menuCustomers.classList.add('active');
+        pageTitle.innerText = 'Customers Management';
+    } else if (viewName === 'followups') {
+        viewFollowups.style.display = 'block';
+        menuFollowups.classList.add('active');
+        pageTitle.innerText = 'Follow-up System';
+    }
+
+    // Tutup sidebar di mobile selepas klik menu
+    sidebar.classList.remove('active');
+}
 
 // Senarai Data Awal
 let customers = [
@@ -28,7 +78,7 @@ let customers = [
         product: "Website Package",
         value: "850",
         status: "Follow-up",
-        date: "2026-08-19"
+        date: "2026-08-19" // Hari ini
     },
     {
         name: "Siti Aminah",
@@ -36,11 +86,19 @@ let customers = [
         product: "Landing Page",
         value: "350",
         status: "Interested",
-        date: "2026-08-20"
+        date: "2026-08-18" // Lepas (Overdue)
+    },
+    {
+        name: "Ali Hassan",
+        phone: "60112233445",
+        product: "E-Commerce Setup",
+        value: "1500",
+        status: "New Lead",
+        date: "2026-08-25" // Akan datang
     }
 ];
 
-// Fungsi untuk tukar format YYYY-MM-DD kepada DD/MM/YYYY
+// Tukar format YYYY-MM-DD kepada DD/MM/YYYY
 function formatDateDisplay(dateString) {
     if (!dateString) return '';
     const parts = dateString.split('-');
@@ -50,29 +108,25 @@ function formatDateDisplay(dateString) {
     return dateString;
 }
 
-// Fungsi untuk buka WhatsApp Click-to-Chat
+// Fungsi Buka WhatsApp Click-to-Chat
 function openWhatsApp(name, phone, product) {
-    // Buang simbol tambahan pada nombor jika ada (kekalkan nombor sahaja)
     const cleanPhone = phone.replace(/[^0-9]/g, '');
-    
-    // Draf mesej follow-up mesra usahawan
     const message = `Hi ${name} 👋 Saya nak follow up berkenaan ${product} yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?`;
-    
-    // Encode mesej untuk URL WhatsApp
     const encodedMessage = encodeURIComponent(message);
-    
-    // Buka pautan WhatsApp di tab baharu
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
 }
 
-// Fungsi untuk render semula jadual
-function renderCustomers() {
+// Fungsi Render Utama untuk Semua Jadual & Metrik
+function renderAllData() {
     customerTableBody.innerHTML = '';
-    
-    const todayStr = new Date().toISOString().split('T')[0];
+    allCustomersTableBody.innerHTML = '';
+    followupTableBody.innerHTML = '';
 
-    customers.forEach((cust, index) => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    let followupCount = 0;
+
+    customers.forEach((cust) => {
         let badgeClass = 'yellow';
         if(cust.status === 'Follow-up') badgeClass = 'orange';
         if(cust.status === 'Purchased') badgeClass = 'green';
@@ -80,18 +134,22 @@ function renderCustomers() {
 
         // Logik Follow-up Pintar
         let followUpBadge = '';
+        let isNeedsAttention = false;
+
         if (cust.date < todayStr) {
             followUpBadge = `<span class="status-badge red" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Overdue</span>`;
+            isNeedsAttention = true;
         } else if (cust.date === todayStr) {
             followUpBadge = `<span class="status-badge orange" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Hari Ini</span>`;
+            isNeedsAttention = true;
         } else {
             followUpBadge = `<span class="status-badge green" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Akan Datang</span>`;
         }
 
         const formattedDate = formatDateDisplay(cust.date);
 
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
+        // 1. HTML untuk Baris Jadual Dashboard & Customers
+        const rowHTML = `
             <td>
                 <strong>${cust.name}</strong>
                 <span class="sub-text">${cust.phone}</span>
@@ -106,13 +164,46 @@ function renderCustomers() {
                 </button>
             </td>
         `;
-        customerTableBody.appendChild(newRow);
+
+        // Masukkan ke Dashboard (semua senarai)
+        const row1 = document.createElement('tr');
+        row1.innerHTML = rowHTML;
+        customerTableBody.appendChild(row1);
+
+        // Masukkan ke Menu Customers
+        const row2 = document.createElement('tr');
+        row2.innerHTML = rowHTML;
+        allCustomersTableBody.appendChild(row2);
+
+        // 2. Jika perlu follow-up (Overdue atau Hari Ini), masukkan ke Senarai Follow-ups
+        if (isNeedsAttention) {
+            followupCount++;
+            const followupRow = document.createElement('tr');
+            followupRow.innerHTML = `
+                <td>
+                    <strong>${cust.name}</strong>
+                    <span class="sub-text">${cust.phone}</span>
+                </td>
+                <td>${cust.product}</td>
+                <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
+                <td>${formattedDate} ${followUpBadge}</td>
+                <td>
+                    <button class="btn-whatsapp" onclick="openWhatsApp('${cust.name}', '${cust.phone}', '${cust.product}')">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp Sekarang
+                    </button>
+                </td>
+            `;
+            followupTableBody.appendChild(followupRow);
+        }
     });
 
+    // Kemaskini Metrik Angka
     totalCustomersElem.innerText = customers.length;
+    needFollowupCountElem.innerText = followupCount;
+    followupCountBadge.innerText = `${followupCount} Pending`;
 }
 
-// Tambah Customer Baru
+// Tambah Customer Baru Melalui Borang Modal
 addCustomerForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -126,11 +217,11 @@ addCustomerForm.addEventListener('submit', function(e) {
     };
 
     customers.unshift(newCust);
-    renderCustomers();
+    renderAllData();
 
     addCustomerForm.reset();
     modal.style.display = 'none';
 });
 
-// Jalankan render kali pertama
-renderCustomers();
+// Jalankan paparan kali pertama
+renderAllData();
