@@ -415,3 +415,13 @@ body {
         padding: 16px;
     }
 }
+
+/* Tambah kod ini di bawah sekali dalam style.css */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+* {
+    max-width: 100vw; /* Memastikan tiada elemen lebih lebar dari skrin */
+}
