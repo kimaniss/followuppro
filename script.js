@@ -17,22 +17,29 @@ const addCustomerForm = document.getElementById('addCustomerForm');
 const customerTableBody = document.getElementById('customerTableBody');
 const allCustomersTableBody = document.getElementById('allCustomersTableBody');
 const followupTableBody = document.getElementById('followupTableBody');
+const salesTableBody = document.getElementById('salesTableBody');
 
 // Metrics Elements
 const totalCustomersElem = document.getElementById('totalCustomers');
 const needFollowupCountElem = document.getElementById('needFollowupCount');
 const followupCountBadge = document.getElementById('followupCountBadge');
+const totalSalesDisplay = document.getElementById('totalSalesDisplay');
+const totalPurchasedCount = document.getElementById('totalPurchasedCount');
+const salesTotalRevenue = document.getElementById('salesTotalRevenue');
+const salesTotalCount = document.getElementById('salesTotalCount');
 const pageTitle = document.getElementById('pageTitle');
 
 // View Sections
 const viewDashboard = document.getElementById('viewDashboard');
 const viewCustomers = document.getElementById('viewCustomers');
 const viewFollowups = document.getElementById('viewFollowups');
+const viewSales = document.getElementById('viewSales');
 
 // Menu Elements
 const menuDashboard = document.getElementById('menuDashboard');
 const menuCustomers = document.getElementById('menuCustomers');
 const menuFollowups = document.getElementById('menuFollowups');
+const menuSales = document.getElementById('menuSales');
 
 // Buka & Tutup Modal
 openModalBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
@@ -41,17 +48,16 @@ cancelModalBtn.addEventListener('click', () => { modal.style.display = 'none'; }
 
 // Fungsi Pertukaran Paparan Halaman (Switch View)
 function switchView(viewName) {
-    // Sembunyikan semua view
     viewDashboard.style.display = 'none';
     viewCustomers.style.display = 'none';
     viewFollowups.style.display = 'none';
+    viewSales.style.display = 'none';
 
-    // Buang kelas active pada semua menu sidebar
     menuDashboard.classList.remove('active');
     menuCustomers.classList.remove('active');
     menuFollowups.classList.remove('active');
+    menuSales.classList.remove('active');
 
-    // Paparkan view yang dipilih
     if (viewName === 'dashboard') {
         viewDashboard.style.display = 'block';
         menuDashboard.classList.add('active');
@@ -64,9 +70,12 @@ function switchView(viewName) {
         viewFollowups.style.display = 'block';
         menuFollowups.classList.add('active');
         pageTitle.innerText = 'Follow-up System';
+    } else if (viewName === 'sales') {
+        viewSales.style.display = 'block';
+        menuSales.classList.add('active');
+        pageTitle.innerText = 'Sales & Revenue';
     }
 
-    // Tutup sidebar di mobile selepas klik menu
     sidebar.classList.remove('active');
 }
 
@@ -76,25 +85,25 @@ let customers = [
         name: "Ahmad Rahman",
         phone: "60123456789",
         product: "Website Package",
-        value: "850",
+        value: 850,
         status: "Follow-up",
-        date: "2026-08-19" // Hari ini
+        date: "2026-08-19"
     },
     {
         name: "Siti Aminah",
         phone: "60198765432",
         product: "Landing Page",
-        value: "350",
-        status: "Interested",
-        date: "2026-08-18" // Lepas (Overdue)
+        value: 350,
+        status: "Purchased",
+        date: "2026-08-18"
     },
     {
         name: "Ali Hassan",
         phone: "60112233445",
         product: "E-Commerce Setup",
-        value: "1500",
-        status: "New Lead",
-        date: "2026-08-25" // Akan datang
+        value: 1200,
+        status: "Purchased",
+        date: "2026-08-15"
     }
 ];
 
@@ -117,14 +126,17 @@ function openWhatsApp(name, phone, product) {
     window.open(whatsappUrl, '_blank');
 }
 
-// Fungsi Render Utama untuk Semua Jadual & Metrik
+// Fungsi Render Utama untuk Semua Jadual & Metrik Sales
 function renderAllData() {
     customerTableBody.innerHTML = '';
     allCustomersTableBody.innerHTML = '';
     followupTableBody.innerHTML = '';
+    salesTableBody.innerHTML = '';
 
     const todayStr = new Date().toISOString().split('T')[0];
     let followupCount = 0;
+    let totalRevenue = 0;
+    let purchasedCount = 0;
 
     customers.forEach((cust) => {
         let badgeClass = 'yellow';
@@ -132,14 +144,33 @@ function renderAllData() {
         if(cust.status === 'Purchased') badgeClass = 'green';
         if(cust.status === 'Lost') badgeClass = 'red';
 
+        // Kira Statistik Sales jika status Purchased
+        if (cust.status === 'Purchased') {
+            totalRevenue += Number(cust.value);
+            purchasedCount++;
+
+            // Masukkan ke Jadual Sales
+            const salesRow = document.createElement('tr');
+            salesRow.innerHTML = `
+                <td>
+                    <strong>${cust.name}</strong>
+                    <span class="sub-text">${cust.phone}</span>
+                </td>
+                <td>${cust.product}</td>
+                <td><strong>RM${Number(cust.value).toLocaleString()}</strong></td>
+                <td>${formatDateDisplay(cust.date)}</td>
+            `;
+            salesTableBody.appendChild(salesRow);
+        }
+
         // Logik Follow-up Pintar
         let followUpBadge = '';
         let isNeedsAttention = false;
 
-        if (cust.date < todayStr) {
+        if (cust.date < todayStr && cust.status !== 'Purchased' && cust.status !== 'Lost') {
             followUpBadge = `<span class="status-badge red" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Overdue</span>`;
             isNeedsAttention = true;
-        } else if (cust.date === todayStr) {
+        } else if (cust.date === todayStr && cust.status !== 'Purchased' && cust.status !== 'Lost') {
             followUpBadge = `<span class="status-badge orange" style="margin-left: 6px; font-size: 10px; padding: 2px 6px;">Hari Ini</span>`;
             isNeedsAttention = true;
         } else {
@@ -148,14 +179,13 @@ function renderAllData() {
 
         const formattedDate = formatDateDisplay(cust.date);
 
-        // 1. HTML untuk Baris Jadual Dashboard & Customers
         const rowHTML = `
             <td>
                 <strong>${cust.name}</strong>
                 <span class="sub-text">${cust.phone}</span>
             </td>
             <td>${cust.product}</td>
-            <td>RM${cust.value}</td>
+            <td>RM${Number(cust.value).toLocaleString()}</td>
             <td><span class="status-badge ${badgeClass}">${cust.status}</span></td>
             <td>${formattedDate} ${followUpBadge}</td>
             <td>
@@ -165,17 +195,14 @@ function renderAllData() {
             </td>
         `;
 
-        // Masukkan ke Dashboard (semua senarai)
         const row1 = document.createElement('tr');
         row1.innerHTML = rowHTML;
         customerTableBody.appendChild(row1);
 
-        // Masukkan ke Menu Customers
         const row2 = document.createElement('tr');
         row2.innerHTML = rowHTML;
         allCustomersTableBody.appendChild(row2);
 
-        // 2. Jika perlu follow-up (Overdue atau Hari Ini), masukkan ke Senarai Follow-ups
         if (isNeedsAttention) {
             followupCount++;
             const followupRow = document.createElement('tr');
@@ -197,13 +224,18 @@ function renderAllData() {
         }
     });
 
-    // Kemaskini Metrik Angka
+    // Kemaskini Metrik Paparan Dashboard & Sales
     totalCustomersElem.innerText = customers.length;
     needFollowupCountElem.innerText = followupCount;
     followupCountBadge.innerText = `${followupCount} Pending`;
+    
+    totalSalesDisplay.innerText = `RM${totalRevenue.toLocaleString()}`;
+    totalPurchasedCount.innerText = purchasedCount;
+    salesTotalRevenue.innerText = `RM${totalRevenue.toLocaleString()}`;
+    salesTotalCount.innerText = purchasedCount;
 }
 
-// Tambah Customer Baru Melalui Borang Modal
+// Tambah Customer Baru
 addCustomerForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -211,7 +243,7 @@ addCustomerForm.addEventListener('submit', function(e) {
         name: document.getElementById('custName').value,
         phone: document.getElementById('custPhone').value,
         product: document.getElementById('custProduct').value,
-        value: document.getElementById('custValue').value,
+        value: Number(document.getElementById('custValue').value),
         status: document.getElementById('custStatus').value,
         date: document.getElementById('custDate').value
     };
