@@ -2,9 +2,38 @@
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
 
-menuToggle.addEventListener('click', () => {
-    sidebar.classList.toggle('active');
-});
+if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+    });
+}
+
+// Auth Elements
+const authScreen = document.getElementById('authScreen');
+const authForm = document.getElementById('authForm');
+const authEmail = document.getElementById('authEmail');
+const authPassword = document.getElementById('authPassword');
+const authSubmitBtn = document.getElementById('authSubmitBtn');
+const authSubtitle = document.getElementById('authSubtitle');
+const toggleAuthModeBtn = document.getElementById('toggleAuthModeBtn');
+
+let isRegisterMode = false;
+
+// Toggle antara Login dan Register
+if (toggleAuthModeBtn) {
+    toggleAuthModeBtn.addEventListener('click', () => {
+        isRegisterMode = !isRegisterMode;
+        if (isRegisterMode) {
+            authSubtitle.innerText = "Daftar akaun CRM baharu";
+            authSubmitBtn.innerText = "Daftar Akaun";
+            toggleAuthModeBtn.innerText = "Sudah ada akaun? Log masuk";
+        } else {
+            authSubtitle.innerText = "Log masuk ke akaun CRM anda";
+            authSubmitBtn.innerText = "Log Masuk";
+            toggleAuthModeBtn.innerText = "Belum ada akaun? Daftar sekarang";
+        }
+    });
+}
 
 // Modal Elements
 const modal = document.getElementById('customerModal');
@@ -15,7 +44,7 @@ const addCustomerForm = document.getElementById('addCustomerForm');
 const settingsForm = document.getElementById('settingsForm');
 const modalTitle = document.getElementById('modalTitle');
 const saveBtnText = document.getElementById('saveBtnText');
-const editDocIdInput = document.getElementById('editDocId'); // Menggunakan ID Firestore
+const editDocIdInput = document.getElementById('editDocId');
 
 // Table Bodies
 const customerTableBody = document.getElementById('customerTableBody');
@@ -54,7 +83,7 @@ const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
 
-// Buka Modal untuk Tambah Baru (Dengan perlindungan ralat)
+// Buka Modal untuk Tambah Baru
 if (openModalBtn) {
     openModalBtn.addEventListener('click', () => {
         if (modalTitle) modalTitle.innerText = "Tambah Customer Baru";
@@ -65,68 +94,63 @@ if (openModalBtn) {
     });
 }
 
-// Tutup Modal
-closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
-cancelModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+if (closeModalBtn) closeModalBtn.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
+if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
 
 // Fungsi Pertukaran Paparan Halaman (Switch View)
 function switchView(viewName) {
-    viewDashboard.style.display = 'none';
-    viewCustomers.style.display = 'none';
-    viewFollowups.style.display = 'none';
-    viewSales.style.display = 'none';
-    viewSettings.style.display = 'none';
+    if(viewDashboard) viewDashboard.style.display = 'none';
+    if(viewCustomers) viewCustomers.style.display = 'none';
+    if(viewFollowups) viewFollowups.style.display = 'none';
+    if(viewSales) viewSales.style.display = 'none';
+    if(viewSettings) viewSettings.style.display = 'none';
 
-    menuDashboard.classList.remove('active');
-    menuCustomers.classList.remove('active');
-    menuFollowups.classList.remove('active');
-    menuSales.classList.remove('active');
-    menuSettings.classList.remove('active');
+    if(menuDashboard) menuDashboard.classList.remove('active');
+    if(menuCustomers) menuCustomers.classList.remove('active');
+    if(menuFollowups) menuFollowups.classList.remove('active');
+    if(menuSales) menuSales.classList.remove('active');
+    if(menuSettings) menuSettings.classList.remove('active');
 
     if (viewName === 'dashboard') {
-        viewDashboard.style.display = 'block';
-        menuDashboard.classList.add('active');
-        pageTitle.innerText = 'Dashboard';
+        if(viewDashboard) viewDashboard.style.display = 'block';
+        if(menuDashboard) menuDashboard.classList.add('active');
+        if(pageTitle) pageTitle.innerText = 'Dashboard';
     } else if (viewName === 'customers') {
-        viewCustomers.style.display = 'block';
-        menuCustomers.classList.add('active');
-        pageTitle.innerText = 'Customers Management';
+        if(viewCustomers) viewCustomers.style.display = 'block';
+        if(menuCustomers) menuCustomers.classList.add('active');
+        if(pageTitle) pageTitle.innerText = 'Customers Management';
     } else if (viewName === 'followups') {
-        viewFollowups.style.display = 'block';
-        menuFollowups.classList.add('active');
-        pageTitle.innerText = 'Follow-up System';
+        if(viewFollowups) viewFollowups.style.display = 'block';
+        if(menuFollowups) menuFollowups.classList.add('active');
+        if(pageTitle) pageTitle.innerText = 'Follow-up System';
     } else if (viewName === 'sales') {
-        viewSales.style.display = 'block';
-        menuSales.classList.add('active');
-        pageTitle.innerText = 'Sales & Revenue';
+        if(viewSales) viewSales.style.display = 'block';
+        if(menuSales) menuSales.classList.add('active');
+        if(pageTitle) pageTitle.innerText = 'Sales & Revenue';
     } else if (viewName === 'settings') {
-        viewSettings.style.display = 'block';
-        menuSettings.classList.add('active');
-        pageTitle.innerText = 'Settings';
+        if(viewSettings) viewSettings.style.display = 'block';
+        if(menuSettings) menuSettings.classList.add('active');
+        if(pageTitle) pageTitle.innerText = 'Settings';
     }
 
-    sidebar.classList.remove('active');
+    if(sidebar) sidebar.classList.remove('active');
 }
 
-// Senarai Data Global dari Firebase
 let customers = [];
 
-// Muat Tetapan Profil dari LocalStorage (Fallback jika tiada)
 let appSettings = JSON.parse(localStorage.getItem('followuppro_settings')) || {
     owner: "Ahmad Bisnes",
     business: "FOLLOWUPPRO Agency",
     message: "Hi [Nama] 👋 Saya nak follow up berkenaan [Produk] yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?"
 };
 
-// Tetapkan nilai hanya jika elemen wujud di dalam HTML untuk elak ralat null
 if (settingOwnerName) settingOwnerName.value = appSettings.owner;
 if (settingBusinessName) settingBusinessName.value = appSettings.business;
 if (settingDefaultMessage) settingDefaultMessage.value = appSettings.message;
-
 if (headerUserName) headerUserName.innerText = appSettings.owner;
 if (greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
 
-// --- FUNGSI FIREBASE CLOUD FIRESTORE ---
+// Firebase Cloud Firestore Fetch
 async function fetchCustomersFromCloud() {
     try {
         const querySnapshot = await window.getDocs(window.collection(window.db, "customers"));
@@ -151,14 +175,13 @@ function formatDateDisplay(dateString) {
 
 function openWhatsApp(name, phone, product) {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
-    let template = settingDefaultMessage.value || appSettings.message;
+    let template = settingDefaultMessage ? settingDefaultMessage.value : appSettings.message;
     const message = template.replace('[Nama]', name).replace('[Produk]', product);
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
 }
 
-// Fungsi Buka Borang untuk Edit Customer berdasarkan ID Firebase
 function editCustomer(id) {
     const cust = customers.find(c => c.id === id);
     if (!cust) return;
@@ -170,13 +193,12 @@ function editCustomer(id) {
     document.getElementById('custStatus').value = cust.status;
     document.getElementById('custDate').value = cust.date;
     
-    editDocIdInput.value = cust.id;
-    modalTitle.innerText = "Edit Customer";
-    saveBtnText.innerText = "Kemas Kini Customer";
-    modal.style.display = 'flex';
+    if(editDocIdInput) editDocIdInput.value = cust.id;
+    if(modalTitle) modalTitle.innerText = "Edit Customer";
+    if(saveBtnText) saveBtnText.innerText = "Kemas Kini Customer";
+    if(modal) modal.style.display = 'flex';
 }
 
-// Fungsi Pembantu untuk Membina Baris Jadual
 function createCustomerRow(cust, showEditButton = false) {
     let badgeClass = 'yellow';
     if(cust.status === 'Follow-up') badgeClass = 'orange';
@@ -231,12 +253,11 @@ function createCustomerRow(cust, showEditButton = false) {
     return row;
 }
 
-// Fungsi Render Utama untuk Semua Jadual & Metrik
 function renderAllData() {
-    customerTableBody.innerHTML = '';
-    allCustomersTableBody.innerHTML = '';
-    followupTableBody.innerHTML = '';
-    salesTableBody.innerHTML = '';
+    if(customerTableBody) customerTableBody.innerHTML = '';
+    if(allCustomersTableBody) allCustomersTableBody.innerHTML = '';
+    if(followupTableBody) followupTableBody.innerHTML = '';
+    if(salesTableBody) salesTableBody.innerHTML = '';
 
     const todayStr = new Date().toISOString().split('T')[0];
     let followupCount = 0;
@@ -248,17 +269,19 @@ function renderAllData() {
             totalRevenue += Number(cust.value);
             purchasedCount++;
 
-            const salesRow = document.createElement('tr');
-            salesRow.innerHTML = `
-                <td>
-                    <strong>${cust.name}</strong>
-                    <span class="sub-text">${cust.phone}</span>
-                </td>
-                <td>${cust.product}</td>
-                <td><strong>RM${Number(cust.value).toLocaleString()}</strong></td>
-                <td>${formatDateDisplay(cust.date)}</td>
-            `;
-            salesTableBody.appendChild(salesRow);
+            if(salesTableBody) {
+                const salesRow = document.createElement('tr');
+                salesRow.innerHTML = `
+                    <td>
+                        <strong>${cust.name}</strong>
+                        <span class="sub-text">${cust.phone}</span>
+                    </td>
+                    <td>${cust.product}</td>
+                    <td><strong>RM${Number(cust.value).toLocaleString()}</strong></td>
+                    <td>${formatDateDisplay(cust.date)}</td>
+                `;
+                salesTableBody.appendChild(salesRow);
+            }
         }
 
         let isNeedsAttention = false;
@@ -268,14 +291,10 @@ function renderAllData() {
             isNeedsAttention = true;
         }
 
-        // 1. Dashboard: Tanpa butang edit
-        customerTableBody.appendChild(createCustomerRow(cust, false));
+        if(customerTableBody) customerTableBody.appendChild(createCustomerRow(cust, false));
+        if(allCustomersTableBody) allCustomersTableBody.appendChild(createCustomerRow(cust, true));
 
-        // 2. Menu Customers: Dengan butang edit
-        allCustomersTableBody.appendChild(createCustomerRow(cust, true));
-
-        // 3. Menu Follow-ups
-        if (isNeedsAttention) {
+        if (isNeedsAttention && followupTableBody) {
             followupCount++;
             let badgeClass = cust.status === 'Follow-up' ? 'orange' : 'yellow';
             const followupRow = document.createElement('tr');
@@ -297,75 +316,103 @@ function renderAllData() {
         }
     });
 
-    totalCustomersElem.innerText = customers.length;
-    needFollowupCountElem.innerText = followupCount;
-    followupCountBadge.innerText = `${followupCount} Pending`;
+    if(totalCustomersElem) totalCustomersElem.innerText = customers.length;
+    if(needFollowupCountElem) needFollowupCountElem.innerText = followupCount;
+    if(followupCountBadge) followupCountBadge.innerText = `${followupCount} Pending`;
     
-    totalSalesDisplay.innerText = `RM${totalRevenue.toLocaleString()}`;
-    totalPurchasedCount.innerText = purchasedCount;
-    salesTotalRevenue.innerText = `RM${totalRevenue.toLocaleString()}`;
-    salesTotalCount.innerText = purchasedCount;
+    if(totalSalesDisplay) totalSalesDisplay.innerText = `RM${totalRevenue.toLocaleString()}`;
+    if(totalPurchasedCount) totalPurchasedCount.innerText = purchasedCount;
+    if(salesTotalRevenue) salesTotalRevenue.innerText = `RM${totalRevenue.toLocaleString()}`;
+    if(salesTotalCount) salesTotalCount.innerText = purchasedCount;
 }
 
-// Submit Borang: Simpan ke Firebase ATAU Kemas Kini Firebase
-addCustomerForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const editDocId = editDocIdInput.value;
-    const custData = {
-        name: document.getElementById('custName').value,
-        phone: document.getElementById('custPhone').value,
-        product: document.getElementById('custProduct').value,
-        value: Number(document.getElementById('custValue').value),
-        status: document.getElementById('custStatus').value,
-        date: document.getElementById('custDate').value
-    };
+if(addCustomerForm) {
+    addCustomerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const editDocId = editDocIdInput ? editDocIdInput.value : "";
+        const custData = {
+            name: document.getElementById('custName').value,
+            phone: document.getElementById('custPhone').value,
+            product: document.getElementById('custProduct').value,
+            value: Number(document.getElementById('custValue').value),
+            status: document.getElementById('custStatus').value,
+            date: document.getElementById('custDate').value
+        };
 
-    try {
-        if (!editDocId) {
-            // Tambah data baharu ke Cloud Firestore
-            await window.addDoc(window.collection(window.db, "customers"), custData);
-        } else {
-            // Kemas kini data sedia ada dalam Cloud Firestore
-            const docRef = window.doc(window.db, "customers", editDocId);
-            await window.updateDoc(docRef, custData);
+        try {
+            if (!editDocId) {
+                await window.addDoc(window.collection(window.db, "customers"), custData);
+            } else {
+                const docRef = window.doc(window.db, "customers", editDocId);
+                await window.updateDoc(docRef, custData);
+            }
+
+            await fetchCustomersFromCloud();
+            addCustomerForm.reset();
+            if(modal) modal.style.display = 'none';
+        } catch (error) {
+            console.error("Ralat menyimpan data: ", error);
+            alert("Gagal menyimpan data.");
         }
+    });
+}
 
-        // Ambil data terkini dari cloud dan render semula
-        await fetchCustomersFromCloud();
+if(settingsForm) {
+    settingsForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        appSettings.owner = settingOwnerName.value;
+        appSettings.business = settingBusinessName.value;
+        appSettings.message = settingDefaultMessage.value;
 
-        addCustomerForm.reset();
-        modal.style.display = 'none';
-    } catch (error) {
-        console.error("Ralat menyimpan data ke Firebase: ", error);
-        alert("Gagal menyimpan data ke pangkalan data awan.");
-    }
-});
+        localStorage.setItem('followuppro_settings', JSON.stringify(appSettings));
+        
+        if(headerUserName) headerUserName.innerText = appSettings.owner;
+        if(greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+        
+        alert('Tetapan berjaya disimpan!');
+        switchView('dashboard');
+    });
+}
 
-// Simpan Tetapan Profil
-settingsForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    appSettings.owner = settingOwnerName.value;
-    appSettings.business = settingBusinessName.value;
-    appSettings.message = settingDefaultMessage.value;
-
-    localStorage.setItem('followuppro_settings', JSON.stringify(appSettings));
-    
-    headerUserName.innerText = appSettings.owner;
-    greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
-    
-    alert('Tetapan dan profil perniagaan berjaya disimpan!');
-    switchView('dashboard');
-});
-
-// Jalankan pengambilan data dari Firebase apabila aplikasi mula dibuka
+// Pengesahan Firebase Auth State Terkini
 window.addEventListener('DOMContentLoaded', () => {
-    // Pastikan Firebase sudah sedia sebelum fetch
     const checkInterval = setInterval(() => {
-        if (window.db && window.getDocs) {
+        if (window.auth && window.onAuthStateChanged) {
             clearInterval(checkInterval);
-            fetchCustomersFromCloud();
+            
+            window.onAuthStateChanged(window.auth, (user) => {
+                if (user) {
+                    // Pengguna telah log masuk -> Sembunyikan skrin login & muat data
+                    if(authScreen) authScreen.style.display = 'none';
+                    fetchCustomersFromCloud();
+                } else {
+                    // Pengguna belum log masuk -> Paparkan skrin login
+                    if(authScreen) authScreen.style.display = 'flex';
+                }
+            });
         }
     }, 200);
 });
+
+// Proses Log Masuk / Daftar Melalui Borang Auth
+if(authForm) {
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = authEmail.value;
+        const password = authPassword.value;
+
+        try {
+            if (isRegisterMode) {
+                await window.createUserWithEmailAndPassword(window.auth, email, password);
+                alert("Pendaftaran akaun berjaya!");
+            } else {
+                await window.signInWithEmailAndPassword(window.auth, email, password);
+            }
+        } catch (error) {
+            console.error("Ralat Auth: ", error.message);
+            alert("Gagal: " + error.message);
+        }
+    });
+}
