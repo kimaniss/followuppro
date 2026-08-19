@@ -12,6 +12,7 @@ const openModalBtn = document.getElementById('openModalBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const cancelModalBtn = document.getElementById('cancelModalBtn');
 const addCustomerForm = document.getElementById('addCustomerForm');
+const settingsForm = document.getElementById('settingsForm');
 
 // Table Bodies
 const customerTableBody = document.getElementById('customerTableBody');
@@ -19,7 +20,7 @@ const allCustomersTableBody = document.getElementById('allCustomersTableBody');
 const followupTableBody = document.getElementById('followupTableBody');
 const salesTableBody = document.getElementById('salesTableBody');
 
-// Metrics Elements
+// Metrics & Header Elements
 const totalCustomersElem = document.getElementById('totalCustomers');
 const needFollowupCountElem = document.getElementById('needFollowupCount');
 const followupCountBadge = document.getElementById('followupCountBadge');
@@ -28,18 +29,27 @@ const totalPurchasedCount = document.getElementById('totalPurchasedCount');
 const salesTotalRevenue = document.getElementById('salesTotalRevenue');
 const salesTotalCount = document.getElementById('salesTotalCount');
 const pageTitle = document.getElementById('pageTitle');
+const headerUserName = document.getElementById('headerUserName');
+const greetingName = document.getElementById('greetingName');
+
+// Setting Input Elements
+const settingOwnerName = document.getElementById('settingOwnerName');
+const settingBusinessName = document.getElementById('settingBusinessName');
+const settingDefaultMessage = document.getElementById('settingDefaultMessage');
 
 // View Sections
 const viewDashboard = document.getElementById('viewDashboard');
 const viewCustomers = document.getElementById('viewCustomers');
 const viewFollowups = document.getElementById('viewFollowups');
 const viewSales = document.getElementById('viewSales');
+const viewSettings = document.getElementById('viewSettings');
 
 // Menu Elements
 const menuDashboard = document.getElementById('menuDashboard');
 const menuCustomers = document.getElementById('menuCustomers');
 const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
+const menuSettings = document.getElementById('menuSettings');
 
 // Buka & Tutup Modal
 openModalBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
@@ -52,11 +62,13 @@ function switchView(viewName) {
     viewCustomers.style.display = 'none';
     viewFollowups.style.display = 'none';
     viewSales.style.display = 'none';
+    viewSettings.style.display = 'none';
 
     menuDashboard.classList.remove('active');
     menuCustomers.classList.remove('active');
     menuFollowups.classList.remove('active');
     menuSales.classList.remove('active');
+    menuSettings.classList.remove('active');
 
     if (viewName === 'dashboard') {
         viewDashboard.style.display = 'block';
@@ -74,6 +86,10 @@ function switchView(viewName) {
         viewSales.style.display = 'block';
         menuSales.classList.add('active');
         pageTitle.innerText = 'Sales & Revenue';
+    } else if (viewName === 'settings') {
+        viewSettings.style.display = 'block';
+        menuSettings.classList.add('active');
+        pageTitle.innerText = 'Settings';
     }
 
     sidebar.classList.remove('active');
@@ -117,16 +133,19 @@ function formatDateDisplay(dateString) {
     return dateString;
 }
 
-// Fungsi Buka WhatsApp Click-to-Chat
+// Fungsi Buka WhatsApp Click-to-Chat Mengikut Template Tetapan
 function openWhatsApp(name, phone, product) {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
-    const message = `Hi ${name} 👋 Saya nak follow up berkenaan ${product} yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?`;
+    let template = settingDefaultMessage.value || `Hi [Nama] 👋 Saya nak follow up berkenaan [Produk] yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?`;
+    
+    // Ganti tag dinamik [Nama] dan [Produk]
+    const message = template.replace('[Nama]', name).replace('[Produk]', product);
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
 }
 
-// Fungsi Render Utama untuk Semua Jadual & Metrik Sales
+// Fungsi Render Utama untuk Semua Jadual & Metrik
 function renderAllData() {
     customerTableBody.innerHTML = '';
     allCustomersTableBody.innerHTML = '';
@@ -144,12 +163,10 @@ function renderAllData() {
         if(cust.status === 'Purchased') badgeClass = 'green';
         if(cust.status === 'Lost') badgeClass = 'red';
 
-        // Kira Statistik Sales jika status Purchased
         if (cust.status === 'Purchased') {
             totalRevenue += Number(cust.value);
             purchasedCount++;
 
-            // Masukkan ke Jadual Sales
             const salesRow = document.createElement('tr');
             salesRow.innerHTML = `
                 <td>
@@ -163,7 +180,6 @@ function renderAllData() {
             salesTableBody.appendChild(salesRow);
         }
 
-        // Logik Follow-up Pintar
         let followUpBadge = '';
         let isNeedsAttention = false;
 
@@ -224,7 +240,6 @@ function renderAllData() {
         }
     });
 
-    // Kemaskini Metrik Paparan Dashboard & Sales
     totalCustomersElem.innerText = customers.length;
     needFollowupCountElem.innerText = followupCount;
     followupCountBadge.innerText = `${followupCount} Pending`;
@@ -253,6 +268,18 @@ addCustomerForm.addEventListener('submit', function(e) {
 
     addCustomerForm.reset();
     modal.style.display = 'none';
+});
+
+// Simpan Tetapan Profil
+settingsForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const owner = settingOwnerName.value;
+    
+    headerUserName.innerText = owner;
+    greetingName.innerHTML = `GOOD MORNING, ${owner.toUpperCase()} 👋`;
+    
+    alert('Tetapan berjaya disimpan!');
+    switchView('dashboard');
 });
 
 // Jalankan paparan kali pertama
