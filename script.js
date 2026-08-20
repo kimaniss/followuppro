@@ -445,9 +445,11 @@ function startRazorpayCheckout() {
                 closeUpgradeModal();
                 fetchCustomersFromCloud();
             } catch (error) {
-                alert("Pembayaran berjaya, tetapi gagal kemas kini akaun.");
-            }
-        },
+        // TUKAR KEPADA INI SUPAYA KITA TAHU RALAT SEBENAR
+        console.error("RALAT FIRESTORE:", error); 
+        alert("Ralat sistem: " + error.message); 
+    }
+},
         "prefill": {
             "email": user.email,
             "contact": "60123456789"
