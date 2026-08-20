@@ -496,3 +496,20 @@ if(authForm) {
         }
     });
 }
+
+// MODAL UPGRADE PRO CONTROLLER
+const upgradeModal = document.getElementById('upgradeModal');
+
+function openUpgradeModal() {
+    if (upgradeModal) upgradeModal.style.display = 'flex';
+    if (sidebar) sidebar.classList.remove('active'); // Tutup sidebar mobile jika terbuka
+}
+
+function closeUpgradeModal() {
+    if (upgradeModal) upgradeModal.style.display = 'none';
+}
+
+function processPaymentRedirect() {
+    alert("🚀 Pautan ke Payment Gateway (Billplz/ToyyibPay) akan dibuka di sini!\n\n(Selepas pembayaran berjaya, status akaun anda akan dikemas kini kepada 'Paid User' secara automatik).");
+    closeUpgradeModal();
+}
