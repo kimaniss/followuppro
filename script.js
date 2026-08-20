@@ -34,7 +34,6 @@ if (toggleAuthModeBtn) {
     });
 }
 
-// Fungsi Log Keluar (Logout)
 function logoutUser() {
     if (confirm("Adakah anda pasti mahu log keluar?")) {
         if (window.auth) {
@@ -101,19 +100,17 @@ const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
 
-// Buka Modal untuk Tambah Baru (Dengan Semakan Had Free Version)
+// Buka Modal untuk Tambah Baru (Dengan Semakan Had 10 Pelanggan Awal)
 if (openModalBtn) {
     openModalBtn.addEventListener('click', () => {
         const MAX_FREE_LIMIT = 10; 
-        const isPaidUser = false; // Tukar kepada true jika akaun Pro/Paid
+        const isPaidUser = false; // Tukar ke true jika akaun Pro/Paid
 
-        // SEKAT TERUS DI SINI SEBELUM MODAL DIBUKA
         if (!isPaidUser && customers.length >= MAX_FREE_LIMIT) {
             alert(`⚠️ Had Akaun Percuma (Free Version) telah penuh (${MAX_FREE_LIMIT} Customer).\n\nSila naik taraf ke akaun Pro (Paid) untuk menambah lebih ramai pelanggan!`);
-            return; // Hentikan tindakan, modal tidak akan dibuka
+            return; 
         }
 
-        // Jika belum capai had, buka modal seperti biasa
         if (modalTitle) modalTitle.innerText = "Tambah Customer Baru";
         if (saveBtnText) saveBtnText.innerText = "Simpan Customer";
         if (editDocIdInput) editDocIdInput.value = "";
@@ -125,7 +122,6 @@ if (openModalBtn) {
 if (closeModalBtn) closeModalBtn.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
 if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
 
-// Fungsi Pertukaran Paparan Halaman (Switch View)
 function switchView(viewName) {
     if(viewDashboard) viewDashboard.style.display = 'none';
     if(viewCustomers) viewCustomers.style.display = 'none';
@@ -166,8 +162,9 @@ function switchView(viewName) {
 
 let customers = [];
 
+// Tetapan default "Pengguna Biasa" dan "WELCOME"
 let appSettings = JSON.parse(localStorage.getItem('followuppro_settings')) || {
-    owner: "Ahmad Bisnes",
+    owner: "Pengguna Biasa",
     business: "FOLLOWUPPRO Agency",
     message: "Hi [Nama] 👋 Saya nak follow up berkenaan [Produk] yang kita bincangkan hari tu. Ada apa-apa yang saya boleh bantu?"
 };
@@ -176,9 +173,8 @@ if (settingOwnerName) settingOwnerName.value = appSettings.owner;
 if (settingBusinessName) settingBusinessName.value = appSettings.business;
 if (settingDefaultMessage) settingDefaultMessage.value = appSettings.message;
 if (headerUserName) headerUserName.innerText = appSettings.owner;
-if (greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+if (greetingName) greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
 
-// AMBIL DATA BERDASARKAN USER UID SAHAJA DARI FIREBASE
 async function fetchCustomersFromCloud() {
     const user = window.auth.currentUser;
     if (!user) return;
@@ -208,7 +204,6 @@ function formatDateDisplay(dateString) {
     return dateString;
 }
 
-// FUNGSI WHATSAPP KLIK-KE-CHAT + AUTO-UPDATE TARIKH (STEP 11)
 async function openWhatsApp(id, name, phone, product) {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     let template = settingDefaultMessage ? settingDefaultMessage.value : appSettings.message;
@@ -236,7 +231,6 @@ async function openWhatsApp(id, name, phone, product) {
     }
 }
 
-// STEP 12: FUNGSI PRATONTON MESEJ AI
 function previewAIMessage(name, product, status, phone, customerId) {
     let drafMesej = "";
 
@@ -409,7 +403,6 @@ function renderAllData() {
     if(salesTotalCount) salesTotalCount.innerText = purchasedCount;
 }
 
-// SIMPAN DATA DENGAN SEMAKAN HAD VERSI PERCUMA (FREE VERSION LIMIT)
 if(addCustomerForm) {
     addCustomerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -421,7 +414,6 @@ if(addCustomerForm) {
         }
 
         const editDocId = editDocIdInput ? editDocIdInput.value : "";
-
         const custData = {
             name: document.getElementById('custName').value,
             phone: document.getElementById('custPhone').value,
@@ -461,7 +453,7 @@ if(settingsForm) {
         localStorage.setItem('followuppro_settings', JSON.stringify(appSettings));
         
         if(headerUserName) headerUserName.innerText = appSettings.owner;
-        if(greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+        if(greetingName) greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
         
         alert('Tetapan berjaya disimpan!');
         switchView('dashboard');
