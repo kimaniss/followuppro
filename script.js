@@ -99,18 +99,14 @@ const menuCustomers = document.getElementById('menuCustomers');
 const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
+const upgradeMenuLi = document.getElementById('upgradeMenuLi'); // Element menu upgrade di sidebar
 
 let isUserPro = false;
 let customers = [];
+let userExpiryDate = null;
 
+// Semak status pelan & tarikh luput dari Firestore
 async function checkUserPlanStatus(userId) {
-    // Semak dari LocalStorage pelayar dahulu
-    const localPlan = localStorage.getItem(`followuppro_plan_${userId}`);
-    if (localPlan === "pro") {
-        isUserPro = true;
-        return;
-    }
-
     try {
         if (!window.db || !window.doc || !window.getDoc) return;
         const userDocRef = window.doc(window.db, "users", userId);
@@ -118,12 +114,66 @@ async function checkUserPlanStatus(userId) {
         
         if (docSnap && docSnap.exists()) {
             const userData = docSnap.data();
-            isUserPro = (userData.plan === "pro");
+            const plan = userData.plan;
+            const expiry = userData.expiryDate; // Format YYYY-MM-DD
+
+            if (plan === "pro" && expiry) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                
+                if (expiry >= todayStr) {
+                    isUserPro = true;
+                    userExpiryDate = expiry;
+                    
+                    // Kira baki hari untuk notis amaran
+                    const diffTime = new Date(expiry) - new Date(todayStr);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays === 3) {
+                        alert("⚠️ Notis: Akaun Pro anda akan tamat tempoh dalam 3 hari lagi. Sila bersedia untuk renew.");
+                    } else if (diffDays === 1) {
+                        alert("🚨 PENTING: Akaun Pro anda tamat ESOK! Sila renew segera.");
+                    }
+                } else {
+                    // Sudah luput tarikh
+                    isUserPro = false;
+                    // Kemas kini status kembali ke free di Firestore
+                    await window.setDoc(userDocRef, { plan: "free" }, { merge: true });
+                    alert("❌ Langganan Pro anda telah tamat tempoh. Akaun kembali kepada versi Free (Had 10 Rekod).");
+                }
+            } else {
+                isUserPro = false;
+            }
         } else {
+            await window.setDoc(userDocRef, {
+                email: window.auth.currentUser.email,
+                plan: "free",
+                createdAt: new Date().toISOString()
+            });
             isUserPro = false;
         }
     } catch (error) {
+        console.error("Ralat semak pelan: ", error);
         isUserPro = false;
+    }
+
+    updateUIBasedOnPlan();
+}
+
+// Kemas kini paparan UI mengikut status Pro atau Free
+function updateUIBasedOnPlan() {
+    const upgradeMenu = document.getElementById('upgradeMenuLi') || document.querySelector("a[onclick='openUpgradeModal()']").parentElement;
+    
+    if (isUserPro) {
+        // Sembunyikan butang upgrade jika sudah pro
+        if (upgradeMenu) upgradeMenu.style.display = 'none';
+        
+        // Paparkan info pro di header jika mahu
+        if (headerUserName) {
+            headerUserName.innerHTML = `${appSettings.owner} <span style="background: #10B981; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">PRO (Exp: ${userExpiryDate})</span>`;
+        }
+    } else {
+        // Paparkan semula butang upgrade jika free/expired
+        if (upgradeMenu) upgradeMenu.style.display = 'block';
     }
 }
 
@@ -295,10 +345,17 @@ function createCustomerRow(cust, showEditButton = false) {
 
 function renderAllData() {
     [customerTableBody, allCustomersTableBody, followupTableBody, salesTableBody].forEach(b => { if(b) b.innerHTML = ''; });
+    
+    // Sekatan 10 rekod jika bukan pro (Expired / Free)
+    let displayCustomers = customers;
+    if (!isUserPro) {
+        displayCustomers = customers.slice(0, 10);
+    }
+
     let totalRev = 0, purchasedCount = 0, followupCount = 0;
     const todayStr = new Date().toISOString().split('T')[0];
 
-    customers.forEach(cust => {
+    displayCustomers.forEach(cust => {
         if (cust.status === 'Purchased') {
             totalRev += Number(cust.value);
             purchasedCount++;
@@ -322,7 +379,7 @@ function renderAllData() {
         }
     });
 
-    if(totalCustomersElem) totalCustomersElem.innerText = customers.length;
+    if(totalCustomersElem) totalCustomersElem.innerText = customers.length; // Papar jumlah sebenar
     if(needFollowupCountElem) needFollowupCountElem.innerText = followupCount;
     if(followupCountBadge) followupCountBadge.innerText = `${followupCount} Pending`;
     if(totalSalesDisplay) totalSalesDisplay.innerText = `RM${totalRev.toLocaleString()}`;
@@ -406,17 +463,9 @@ if(authForm) {
     });
 }
 
-// MODAL UPGRADE PRO & RAZORPAY CHECKOUT CONTROLLER
-// (Nota: Pastikan 'const upgradeModal' di atas hanya diisytiharkan sekali sahaja dalam fail ini)
-
-function openUpgradeModal() {
-    if (upgradeModal) upgradeModal.style.display = 'flex';
-    if (sidebar) sidebar.classList.remove('active');
-}
-
-function closeUpgradeModal() {
-    if (upgradeModal) upgradeModal.style.display = 'none';
-}
+// Upgrade & Pembayaran Razorpay (Tempoh Sah Laku 30 Hari)
+function openUpgradeModal() { if(upgradeModal) upgradeModal.style.display = 'flex'; if(sidebar) sidebar.classList.remove('active'); }
+function closeUpgradeModal() { if(upgradeModal) upgradeModal.style.display = 'none'; }
 
 function startRazorpayCheckout() {
     const user = window.auth ? window.auth.currentUser : null;
@@ -424,32 +473,37 @@ function startRazorpayCheckout() {
 
     const options = {
         "key": "rzp_test_TRwCILaQmGidqj",
-        "amount": 2900, // RM29.00
+        "amount": 2900,
         "currency": "MYR",
         "name": "FOLLOWUPPRO",
         "description": "Langganan Bulanan Usahawan Pro",
         "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150",
         "handler": async function (response){
             try {
+                // Kira tarikh luput 30 hari dari hari ini
+                const expiry = new Date();
+                expiry.setDate(expiry.getDate() + 30);
+                const expiryDateStr = expiry.toISOString().split('T')[0];
+
                 const userDocRef = window.doc(window.db, "users", user.uid);
                 await window.setDoc(userDocRef, {
                     plan: "pro",
+                    expiryDate: expiryDateStr,
                     paymentId: response.razorpay_payment_id,
                     updatedAt: new Date().toISOString()
                 }, { merge: true });
 
-                localStorage.setItem(`followuppro_plan_${user.uid}`, "pro");
                 isUserPro = true;
+                userExpiryDate = expiryDateStr;
                 
-                alert("🎉 Pembayaran Berjaya! Akaun anda kini Pro.");
+                alert(`🎉 Pembayaran Berjaya! Akaun anda kini Pro sehingga ${expiryDateStr}.`);
                 closeUpgradeModal();
+                updateUIBasedOnPlan();
                 fetchCustomersFromCloud();
             } catch (error) {
-        // TUKAR KEPADA INI SUPAYA KITA TAHU RALAT SEBENAR
-        console.error("RALAT FIRESTORE:", error); 
-        alert("Ralat sistem: " + error.message); 
-    }
-},
+                alert("Pembayaran berjaya, tetapi gagal kemas kini akaun: " + error.message);
+            }
+        },
         "prefill": {
             "email": user.email,
             "contact": "60123456789"
