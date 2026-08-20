@@ -161,7 +161,7 @@ if (settingOwnerName) settingOwnerName.value = appSettings.owner;
 if (settingBusinessName) settingBusinessName.value = appSettings.business;
 if (settingDefaultMessage) settingDefaultMessage.value = appSettings.message;
 if (headerUserName) headerUserName.innerText = appSettings.owner;
-if (greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+if (greetingName) greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
 
 // AMBIL DATA BERDASARKAN USER UID SAHAJA DARI FIREBASE
 async function fetchCustomersFromCloud() {
@@ -389,7 +389,7 @@ if(settingsForm) {
         localStorage.setItem('followuppro_settings', JSON.stringify(appSettings));
         
         if(headerUserName) headerUserName.innerText = appSettings.owner;
-        if(greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
+        if(greetingName) greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
         
         alert('Tetapan berjaya disimpan!');
         switchView('dashboard');
