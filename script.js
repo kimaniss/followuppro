@@ -260,12 +260,16 @@ function createCustomerRow(cust, showEditButton = false) {
     const formattedDate = formatDateDisplay(cust.date);
 
     let actionButtonsHTML = showEditButton ? `
-        <div class="action-btns">
+        <div class="action-btns" style="display: flex; gap: 6px; flex-wrap: wrap;">
             <button class="btn-edit" onclick="editCustomer('${cust.id}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
             <button class="btn-whatsapp" onclick="openWhatsApp('${cust.id}', '${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+            <button onclick="previewAIMessage('${cust.name}', '${cust.product}', '${cust.status}', '${cust.phone}', '${cust.id}')" style="background: #7C3AED; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Mesej</button>
         </div>
     ` : `
-        <button class="btn-whatsapp" onclick="openWhatsApp('${cust.id}', '${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+        <div class="action-btns" style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn-whatsapp" onclick="openWhatsApp('${cust.id}', '${cust.name}', '${cust.phone}', '${cust.product}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+            <button onclick="previewAIMessage('${cust.name}', '${cust.product}', '${cust.status}', '${cust.phone}', '${cust.id}')" style="background: #7C3AED; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Mesej</button>
+        </div>
     `;
 
     const row = document.createElement('tr');
