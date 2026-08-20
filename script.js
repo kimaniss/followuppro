@@ -103,12 +103,13 @@ const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
 
-// Status Pro Pengguna (Default False)
+// Status Pro Pengguna
 let isUserPro = false;
 
-// Semak status pelan dari Firestore semasa log masuk
+// Semak status pelan dari Firestore dengan aman
 async function checkUserPlanStatus(userId) {
     try {
+        if (!window.db || !window.doc || !window.getDoc) return;
         const userDocRef = window.doc(window.db, "users", userId);
         const docSnap = await window.getDoc(userDocRef);
         
@@ -124,12 +125,12 @@ async function checkUserPlanStatus(userId) {
             isUserPro = false;
         }
     } catch (error) {
-        console.error("Ralat menyemak status pelan (diabaikan untuk muat data): ", error);
-        isUserPro = false; // Tetapkan free jika gagal
+        console.error("Ralat pelan (diabaikan): ", error);
+        isUserPro = false;
     }
 }
 
-// Buka Modal untuk Tambah Baru (Dengan Semakan Had 10 Pelanggan Awal)
+// Buka Modal untuk Tambah Baru (Dengan Semakan Had 10 Pelanggan)
 if (openModalBtn) {
     openModalBtn.addEventListener('click', () => {
         const MAX_FREE_LIMIT = 10; 
@@ -203,7 +204,7 @@ if (headerUserName) headerUserName.innerText = appSettings.owner;
 if (greetingName) greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
 
 async function fetchCustomersFromCloud() {
-    const user = window.auth.currentUser;
+    const user = window.auth ? window.auth.currentUser : null;
     if (!user) return;
 
     try {
@@ -254,7 +255,7 @@ async function openWhatsApp(id, name, phone, product) {
 
         await fetchCustomersFromCloud();
     } catch (error) {
-        console.error("Ralat mengemas kini tarikh automatik selepas WhatsApp: ", error);
+        console.error("Ralat mengemas kini tarikh automatik: ", error);
     }
 }
 
@@ -307,7 +308,7 @@ async function sendCustomWhatsApp(id, name, phone, customMessage) {
 
         await fetchCustomersFromCloud();
     } catch (error) {
-        console.error("Ralat kemas kini tarikh AI WhatsApp: ", error);
+        console.error("Ralat AI WhatsApp: ", error);
     }
 }
 
@@ -434,7 +435,7 @@ if(addCustomerForm) {
     addCustomerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const user = window.auth.currentUser;
+        const user = window.auth ? window.auth.currentUser : null;
         if (!user) {
             alert("Sila log masuk semula.");
             return;
@@ -487,6 +488,7 @@ if(settingsForm) {
     });
 }
 
+// Pengesahan Autentikasi Firebase yang Stabil
 window.addEventListener('DOMContentLoaded', () => {
     const checkInterval = setInterval(() => {
         if (window.auth && window.onAuthStateChanged) {
@@ -502,7 +504,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-    }, 200);
+    }, 150);
 });
 
 if(authForm) {
@@ -538,7 +540,7 @@ function closeUpgradeModal() {
 }
 
 function startRazorpayCheckout() {
-    const user = window.auth.currentUser;
+    const user = window.auth ? window.auth.currentUser : null;
     if (!user) {
         alert("Sila log masuk dahulu.");
         return;
@@ -546,9 +548,9 @@ function startRazorpayCheckout() {
 
     const options = {
         "key": "rzp_test_TRwCILaQmGidqj",
-    "subscription_id": "sub_TRtaj04yS2uNrA", // ID langganan yang anda jana dari dashboard Razorpay/Curlec
-    "name": "FOLLOWUPPRO",
-    "description": "Langganan Bulanan Usahawan Pro",
+        "subscription_id": "sub_TRtaj04yS2uNrA",
+        "name": "FOLLOWUPPRO",
+        "description": "Langganan Bulanan Usahawan Pro",
         "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150",
         "handler": async function (response){
             try {
