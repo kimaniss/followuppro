@@ -405,9 +405,17 @@ if(authForm) {
     });
 }
 
-// Upgrade & Pembayaran Razorpay
-function openUpgradeModal() { if(upgradeModal) upgradeModal.style.display = 'flex'; if(sidebar) sidebar.classList.remove('active'); }
-function closeUpgradeModal() { if(upgradeModal) upgradeModal.style.display = 'none'; }
+// MODAL UPGRADE PRO & RAZORPAY CHECKOUT CONTROLLER
+// (Nota: Pastikan 'const upgradeModal' di atas hanya diisytiharkan sekali sahaja dalam fail ini)
+
+function openUpgradeModal() {
+    if (upgradeModal) upgradeModal.style.display = 'flex';
+    if (sidebar) sidebar.classList.remove('active');
+}
+
+function closeUpgradeModal() {
+    if (upgradeModal) upgradeModal.style.display = 'none';
+}
 
 function startRazorpayCheckout() {
     const user = window.auth ? window.auth.currentUser : null;
