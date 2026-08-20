@@ -58,6 +58,10 @@
                 <li id="menuSettings">
                     <a href="#" onclick="switchView('settings')"><i class="fa-solid fa-gear"></i> Settings</a>
                 </li>
+                <!-- MENU UPGRADE PRO -->
+                <li style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                    <a href="#" onclick="openUpgradeModal()" style="color: #F59E0B; font-weight: 700;"><i class="fa-solid fa-crown"></i> Upgrade to Pro</a>
+                </li>
             </ul>
         </aside>
 
@@ -350,6 +354,40 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL UPGRADE PRO / PAID VERSION -->
+<div id="upgradeModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1002; align-items: center; justify-content: center; padding: 16px;">
+    <div class="modal-content" style="background: white; width: 100%; max-width: 480px; border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; position: relative;">
+        <button type="button" onclick="closeUpgradeModal()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
+        
+        <div style="width: 60px; height: 60px; background: #FEF3C7; color: #D97706; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px auto;">
+            <i class="fa-solid fa-crown"></i>
+        </div>
+
+        <h3 style="font-size: 20px; font-weight: 700; color: #0F172A; margin-bottom: 8px;">Naik Taraf ke FOLLOWUPPRO Pro</h3>
+        <p style="font-size: 13px; color: #64748B; margin-bottom: 24px; line-height: 1.5;">Buka kunci tanpa had untuk pangkalan data pelanggan anda dan nikmati ciri AI sepenuhnya.</p>
+        
+        <!-- Kad Pakej Harga -->
+        <div style="background: #F8FAFC; border: 2px solid #2563EB; border-radius: 12px; padding: 20px; margin-bottom: 24px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 14px; font-weight: 700; color: #1E293B;">Pakej Usahawan Pro</span>
+                <span style="background: #DBEAFE; color: #1D4ED8; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px;">Paling Popular</span>
+            </div>
+            <div style="font-size: 28px; font-weight: 800; color: #0F172A; margin-bottom: 12px;">RM29 <span style="font-size: 12px; font-weight: 400; color: #64748B;">/ bulan</span></div>
+            <ul style="font-size: 12px; color: #475569; list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+                <li><i class="fa-solid fa-check" style="color: #16A34A; margin-right: 6px;"></i> Simpan <strong>Tanpa Had</strong> Pelanggan</li>
+                <li><i class="fa-solid fa-check" style="color: #16A34A; margin-right: 6px;"></i> Penjanaan Mesej Pintar AI Unlimited</li>
+                <li><i class="fa-solid fa-check" style="color: #16A34A; margin-right: 6px;"></i> Auto-Update Tarikh Follow-up</li>
+                <li><i class="fa-solid fa-check" style="color: #16A34A; margin-right: 6px;"></i> Sokongan Pelanggan Keutamaan</li>
+            </ul>
+        </div>
+
+        <button type="button" onclick="processPaymentRedirect()" style="width: 100%; background: #2563EB; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);">
+            <i class="fa-solid fa-lock"></i> Langgan Sekarang (Billplz / ToyyibPay)
+        </button>
+        <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">Pembayaran selamat melalui gateway tempatan yang diiktiraf.</p>
+    </div>
+</div>
 
     <!-- Pautan SDK Firebase & Modul -->
     <script type="module">
