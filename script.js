@@ -422,17 +422,6 @@ if(addCustomerForm) {
 
         const editDocId = editDocIdInput ? editDocIdInput.value : "";
 
-        // SEMAKAN HAD AKAUN PERCUMA (MAX 10 CUSTOMER UNTUK FREE PLAN)
-        if (!editDocId) {
-            const MAX_FREE_LIMIT = 10; 
-            const isPaidUser = false; // Tukar kepada true jika akaun telah melanggan versi Pro/Paid
-
-            if (!isPaidUser && customers.length >= MAX_FREE_LIMIT) {
-                alert(`⚠️ Had Akaun Percuma (Free Version) telah penuh (${MAX_FREE_LIMIT} Customer).\n\nSila naik taraf ke akaun Pro (Paid) untuk menambah lebih ramai pelanggan!`);
-                return; 
-            }
-        }
-
         const custData = {
             name: document.getElementById('custName').value,
             phone: document.getElementById('custPhone').value,
