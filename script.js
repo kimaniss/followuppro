@@ -436,3 +436,66 @@ if(authForm) {
         }
     });
 }
+
+// STEP 12: Logik Penjanaan & Paparan Mesej AI
+const aiModal = document.getElementById('aiModal');
+const aiMessageOutput = document.getElementById('aiMessageOutput');
+const sendAIWhatsAppBtn = document.getElementById('sendAIWhatsAppBtn');
+
+function previewAIMessage(name, product, status, phone, customerId) {
+    let drafMesej = "";
+
+    // Logik AI berasaskan status pelanggan
+    if (status === "Purchased") {
+        drafMesej = `Hi ${name} ✨ Terima kasih banyak kerana mendapatkan ${product} bersama kami! Macam mana dengan pengalaman menggunakan servis ini setakat ini? Ada apa-apa lagi yang boleh saya bantu?`;
+    } else if (status === "Follow-up") {
+        drafMesej = `Hi ${name} 👋 Saya terfikirkan perbincangan kita mengenai ${product} sebelum ini. Adakah anda mempunyai sebarang soalan tambahan atau sudah bersedia untuk kita teruskan?`;
+    } else if (status === "Interested") {
+        drafMesej = `Hi ${name} 😊 Salam sejahtera! Saya nampak anda berminat dengan ${product}. Jom kita sembang sebentar, saya ada info eksklusif untuk anda hari ini.`;
+    } else {
+        drafMesej = `Hi ${name} 👋 Salam mesra daripada ${appSettings.business}! Saya ingin tanyakan khabar berkenaan ${product}. Ada apa-apa yang saya boleh bantu?`;
+    }
+
+    if (aiMessageOutput) aiMessageOutput.value = drafMesej;
+    if (aiModal) aiModal.style.display = 'flex';
+
+    // Tetapkan fungsi butang Hantar WhatsApp di dalam modal AI
+    if (sendAIWhatsAppBtn) {
+        sendAIWhatsAppBtn.onclick = async function() {
+            closeAIModal();
+            // Guna fungsi WhatsApp sedia ada (Step 11 yang auto-update tarikh)
+            const finalCustomMessage = aiMessageOutput.value;
+            await sendCustomWhatsApp(customerId, name, phone, finalCustomMessage);
+        };
+    }
+}
+
+function closeAIModal() {
+    if (aiModal) aiModal.style.display = 'none';
+}
+
+// Fungsi Sokongan Hantar Mesej Custom ke WhatsApp + Auto-Update Tarikh
+async function sendCustomWhatsApp(id, name, phone, customMessage) {
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    const encodedMessage = encodeURIComponent(customMessage);
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+
+    // Auto-update tarikh 7 hari ke hadapan seperti Step 11
+    try {
+        const nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        const nextDateStr = nextWeek.toISOString().split('T')[0];
+
+        const docRef = window.doc(window.db, "customers", id);
+        await window.updateDoc(docRef, {
+            date: nextDateStr,
+            status: "Follow-up"
+        });
+
+        await fetchCustomersFromCloud();
+    } catch (error) {
+        console.error("Ralat kemas kini tarikh AI WhatsApp: ", error);
+    }
+}
