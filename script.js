@@ -516,12 +516,10 @@ function processPaymentRedirect() {
         return;
     }
 
-    // Pautan pembayaran Razorpay/Curlec anda
+    // Pautan pembayaran Razorpay/Curlec anda yang betul
     const paymentUrl = "https://rzp.io/rzp/QfG7qdsz";
     const finalPaymentUrl = `${paymentUrl}?receipt_id=${user.uid}`;
 
     closeUpgradeModal();
     window.open(finalPaymentUrl, '_blank');
-    
-    alert("Anda kini dihalakan ke halaman pembayaran selamat. Sila selesaikan proses langganan anda.");
 }
