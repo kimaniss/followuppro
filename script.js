@@ -104,6 +104,13 @@ let isUserPro = false;
 let customers = [];
 
 async function checkUserPlanStatus(userId) {
+    // Semak dari LocalStorage pelayar dahulu
+    const localPlan = localStorage.getItem(`followuppro_plan_${userId}`);
+    if (localPlan === "pro") {
+        isUserPro = true;
+        return;
+    }
+
     try {
         if (!window.db || !window.doc || !window.getDoc) return;
         const userDocRef = window.doc(window.db, "users", userId);
@@ -112,16 +119,10 @@ async function checkUserPlanStatus(userId) {
         if (docSnap && docSnap.exists()) {
             const userData = docSnap.data();
             isUserPro = (userData.plan === "pro");
-        } else if (window.setDoc) {
-            await window.setDoc(userDocRef, {
-                email: window.auth.currentUser.email,
-                plan: "free",
-                createdAt: new Date().toISOString()
-            });
+        } else {
             isUserPro = false;
         }
     } catch (error) {
-        console.error("Ralat semak pelan: ", error);
         isUserPro = false;
     }
 }
@@ -429,18 +430,29 @@ function startRazorpayCheckout() {
         "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150",
         "handler": async function (response){
             try {
-                await window.setDoc(window.doc(window.db, "users", user.uid), {
-                    plan: "pro",
-                    paymentId: response.razorpay_payment_id,
-                    updatedAt: new Date().toISOString()
-                }, { merge: true });
-
+                // Simpan status pro ke dalam LocalStorage pelayar untuk kegunaan serta-merta
+                localStorage.setItem(`followuppro_plan_${user.uid}`, "pro");
                 isUserPro = true;
-                alert("🎉 Pembayaran Berjaya! Akaun anda kini Pro.");
+
+                // Cuba juga simpan ke Firestore jika koleksi wujud (tanpa halang proses jika gagal)
+                try {
+                    const userDocRef = window.doc(window.db, "users", user.uid);
+                    await window.setDoc(userDocRef, {
+                        plan: "pro",
+                        email: user.email,
+                        paymentId: response.razorpay_payment_id || "DEMO_PAYMENT",
+                        updatedAt: new Date().toISOString()
+                    }, { merge: true });
+                } catch (fsError) {
+                    console.log("Nota Firestore: Koleksi users tidak wajib untuk demo ini.");
+                }
+
+                alert("🎉 Pembayaran Berjaya! Akaun anda kini telah dinaik taraf kepada versi Pro.");
                 closeUpgradeModal();
                 fetchCustomersFromCloud();
             } catch (error) {
-                alert("Pembayaran berjaya, tetapi gagal kemas kini akaun.");
+                console.error("Ralat proses bayaran: ", error);
+                alert("Pembayaran berjaya, tetapi berlaku ralat sistem.");
             }
         },
         "prefill": { "email": user.email, "contact": "60123456789" },
