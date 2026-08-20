@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Skrip Rasmi Razorpay Checkout -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 
@@ -383,9 +385,9 @@
         </div>
 
         <!-- PASTIKAN ONCLICK MERUJUK KEPADA processPaymentRedirect -->
-        <button type="button" onclick="processPaymentRedirect()" style="width: 100%; background: #2563EB; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);">
-            <i class="fa-solid fa-lock"></i> Langgan Sekarang (via Curlec/Razorpay)
-        </button>
+        <button type5="button" onclick="startRazorpayCheckout()" style="width: 100%; background: #2563EB; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);">
+    <i class="fa-solid fa-lock"></i> Langgan Sekarang (RM29/bulan)
+</button>
         <p style="font-size: 11px; color: #94A3B8; margin-top: 12px;">Pembayaran selamat melalui gateway yang diiktiraf.</p>
     </div>
 </div>
