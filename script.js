@@ -59,6 +59,11 @@ const modalTitle = document.getElementById('modalTitle');
 const saveBtnText = document.getElementById('saveBtnText');
 const editDocIdInput = document.getElementById('editDocId');
 
+// AI Modal Elements
+const aiModal = document.getElementById('aiModal');
+const aiMessageOutput = document.getElementById('aiMessageOutput');
+const sendAIWhatsAppBtn = document.getElementById('sendAIWhatsAppBtn');
+
 // Table Bodies
 const customerTableBody = document.getElementById('customerTableBody');
 const allCustomersTableBody = document.getElementById('allCustomersTableBody');
@@ -161,7 +166,7 @@ if (settingOwnerName) settingOwnerName.value = appSettings.owner;
 if (settingBusinessName) settingBusinessName.value = appSettings.business;
 if (settingDefaultMessage) settingDefaultMessage.value = appSettings.message;
 if (headerUserName) headerUserName.innerText = appSettings.owner;
-if (greetingName) greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
+if (greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
 
 // AMBIL DATA BERDASARKAN USER UID SAHAJA DARI FIREBASE
 async function fetchCustomersFromCloud() {
@@ -193,7 +198,7 @@ function formatDateDisplay(dateString) {
     return dateString;
 }
 
-// STEP 11: FUNGSI WHATSAPP KLIK-KE-CHAT DENGAN KEMAS KINI TARIKH AUTOMATIK
+// FUNGSI WHATSAPP KLIK-KE-CHAT + AUTO-UPDATE TARIKH (STEP 11)
 async function openWhatsApp(id, name, phone, product) {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     let template = settingDefaultMessage ? settingDefaultMessage.value : appSettings.message;
@@ -202,10 +207,8 @@ async function openWhatsApp(id, name, phone, product) {
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
     
-    // Buka WhatsApp di tab baharu
     window.open(whatsappUrl, '_blank');
 
-    // Kemas kini tarikh follow-up seterusnya 7 hari ke hadapan secara automatik
     try {
         const nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
@@ -220,6 +223,60 @@ async function openWhatsApp(id, name, phone, product) {
         await fetchCustomersFromCloud();
     } catch (error) {
         console.error("Ralat mengemas kini tarikh automatik selepas WhatsApp: ", error);
+    }
+}
+
+// STEP 12: FUNGSI PRATONTON MESEJ AI
+function previewAIMessage(name, product, status, phone, customerId) {
+    let drafMesej = "";
+
+    if (status === "Purchased") {
+        drafMesej = `Hi ${name} ✨ Terima kasih banyak kerana mendapatkan ${product} bersama kami! Macam mana dengan pengalaman menggunakan servis ini setakat ini? Ada apa-apa lagi yang boleh saya bantu?`;
+    } else if (status === "Follow-up") {
+        drafMesej = `Hi ${name} 👋 Saya terfikirkan perbincangan kita mengenai ${product} sebelum ini. Adakah anda mempunyai sebarang soalan tambahan atau sudah bersedia untuk kita teruskan?`;
+    } else if (status === "Interested") {
+        drafMesej = `Hi ${name} 😊 Salam sejahtera! Saya nampak anda berminat dengan ${product}. Jom kita sembang sebentar, saya ada info eksklusif untuk anda hari ini.`;
+    } else {
+        drafMesej = `Hi ${name} 👋 Salam mesra daripada ${appSettings.business}! Saya ingin tanyakan khabar berkenaan ${product}. Ada apa-apa yang saya boleh bantu?`;
+    }
+
+    if (aiMessageOutput) aiMessageOutput.value = drafMesej;
+    if (aiModal) aiModal.style.display = 'flex';
+
+    if (sendAIWhatsAppBtn) {
+        sendAIWhatsAppBtn.onclick = async function() {
+            closeAIModal();
+            const finalCustomMessage = aiMessageOutput.value;
+            await sendCustomWhatsApp(customerId, name, phone, finalCustomMessage);
+        };
+    }
+}
+
+function closeAIModal() {
+    if (aiModal) aiModal.style.display = 'none';
+}
+
+async function sendCustomWhatsApp(id, name, phone, customMessage) {
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    const encodedMessage = encodeURIComponent(customMessage);
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+
+    try {
+        const nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        const nextDateStr = nextWeek.toISOString().split('T')[0];
+
+        const docRef = window.doc(window.db, "customers", id);
+        await window.updateDoc(docRef, {
+            date: nextDateStr,
+            status: "Follow-up"
+        });
+
+        await fetchCustomersFromCloud();
+    } catch (error) {
+        console.error("Ralat kemas kini tarikh AI WhatsApp: ", error);
     }
 }
 
@@ -342,7 +399,7 @@ function renderAllData() {
     if(salesTotalCount) salesTotalCount.innerText = purchasedCount;
 }
 
-// Simpan data dengan menyertakan ownerId pengguna yang sah
+// SIMPAN DATA DENGAN SEMAKAN HAD VERSI PERCUMA (FREE VERSION LIMIT)
 if(addCustomerForm) {
     addCustomerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -354,6 +411,18 @@ if(addCustomerForm) {
         }
 
         const editDocId = editDocIdInput ? editDocIdInput.value : "";
+
+        // SEMAKAN HAD AKAUN PERCUMA (MAX 10 CUSTOMER UNTUK FREE PLAN)
+        if (!editDocId) {
+            const MAX_FREE_LIMIT = 10; 
+            const isPaidUser = false; // Tukar kepada true jika akaun telah melanggan versi Pro/Paid
+
+            if (!isPaidUser && customers.length >= MAX_FREE_LIMIT) {
+                alert(`⚠️ Had Akaun Percuma (Free Version) telah penuh (${MAX_FREE_LIMIT} Customer).\n\nSila naik taraf ke akaun Pro (Paid) untuk menambah lebih ramai pelanggan!`);
+                return; 
+            }
+        }
+
         const custData = {
             name: document.getElementById('custName').value,
             phone: document.getElementById('custPhone').value,
@@ -393,7 +462,7 @@ if(settingsForm) {
         localStorage.setItem('followuppro_settings', JSON.stringify(appSettings));
         
         if(headerUserName) headerUserName.innerText = appSettings.owner;
-        if(greetingName) greetingName.innerHTML = `WELCOME, ${appSettings.owner.toUpperCase()} 👋`;
+        if(greetingName) greetingName.innerHTML = `GOOD MORNING, ${appSettings.owner.toUpperCase()} 👋`;
         
         alert('Tetapan berjaya disimpan!');
         switchView('dashboard');
@@ -435,67 +504,4 @@ if(authForm) {
             alert("Gagal: " + error.message);
         }
     });
-}
-
-// STEP 12: Logik Penjanaan & Paparan Mesej AI
-const aiModal = document.getElementById('aiModal');
-const aiMessageOutput = document.getElementById('aiMessageOutput');
-const sendAIWhatsAppBtn = document.getElementById('sendAIWhatsAppBtn');
-
-function previewAIMessage(name, product, status, phone, customerId) {
-    let drafMesej = "";
-
-    // Logik AI berasaskan status pelanggan
-    if (status === "Purchased") {
-        drafMesej = `Hi ${name} ✨ Terima kasih banyak kerana mendapatkan ${product} bersama kami! Macam mana dengan pengalaman menggunakan servis ini setakat ini? Ada apa-apa lagi yang boleh saya bantu?`;
-    } else if (status === "Follow-up") {
-        drafMesej = `Hi ${name} 👋 Saya terfikirkan perbincangan kita mengenai ${product} sebelum ini. Adakah anda mempunyai sebarang soalan tambahan atau sudah bersedia untuk kita teruskan?`;
-    } else if (status === "Interested") {
-        drafMesej = `Hi ${name} 😊 Salam sejahtera! Saya nampak anda berminat dengan ${product}. Jom kita sembang sebentar, saya ada info eksklusif untuk anda hari ini.`;
-    } else {
-        drafMesej = `Hi ${name} 👋 Salam mesra daripada ${appSettings.business}! Saya ingin tanyakan khabar berkenaan ${product}. Ada apa-apa yang saya boleh bantu?`;
-    }
-
-    if (aiMessageOutput) aiMessageOutput.value = drafMesej;
-    if (aiModal) aiModal.style.display = 'flex';
-
-    // Tetapkan fungsi butang Hantar WhatsApp di dalam modal AI
-    if (sendAIWhatsAppBtn) {
-        sendAIWhatsAppBtn.onclick = async function() {
-            closeAIModal();
-            // Guna fungsi WhatsApp sedia ada (Step 11 yang auto-update tarikh)
-            const finalCustomMessage = aiMessageOutput.value;
-            await sendCustomWhatsApp(customerId, name, phone, finalCustomMessage);
-        };
-    }
-}
-
-function closeAIModal() {
-    if (aiModal) aiModal.style.display = 'none';
-}
-
-// Fungsi Sokongan Hantar Mesej Custom ke WhatsApp + Auto-Update Tarikh
-async function sendCustomWhatsApp(id, name, phone, customMessage) {
-    const cleanPhone = phone.replace(/[^0-9]/g, '');
-    const encodedMessage = encodeURIComponent(customMessage);
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
-    
-    window.open(whatsappUrl, '_blank');
-
-    // Auto-update tarikh 7 hari ke hadapan seperti Step 11
-    try {
-        const nextWeek = new Date();
-        nextWeek.setDate(nextWeek.getDate() + 7);
-        const nextDateStr = nextWeek.toISOString().split('T')[0];
-
-        const docRef = window.doc(window.db, "customers", id);
-        await window.updateDoc(docRef, {
-            date: nextDateStr,
-            status: "Follow-up"
-        });
-
-        await fetchCustomersFromCloud();
-    } catch (error) {
-        console.error("Ralat kemas kini tarikh AI WhatsApp: ", error);
-    }
 }
