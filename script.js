@@ -63,6 +63,9 @@ const aiModal = document.getElementById('aiModal');
 const aiMessageOutput = document.getElementById('aiMessageOutput');
 const sendAIWhatsAppBtn = document.getElementById('sendAIWhatsAppBtn');
 
+// Upgrade Modal Elements
+const upgradeModal = document.getElementById('upgradeModal');
+
 // Table Bodies
 const customerTableBody = document.getElementById('customerTableBody');
 const allCustomersTableBody = document.getElementById('allCustomersTableBody');
@@ -100,14 +103,38 @@ const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
 
+// Status Pro Pengguna (Default False)
+let isUserPro = false;
+
+// Semak status pelan dari Firestore semasa log masuk
+async function checkUserPlanStatus(userId) {
+    try {
+        const userDocRef = window.doc(window.db, "users", userId);
+        const docSnap = await window.getDoc(userDocRef);
+        
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            isUserPro = (userData.plan === "pro");
+        } else {
+            await window.setDoc(userDocRef, {
+                email: window.auth.currentUser.email,
+                plan: "free",
+                createdAt: new Date().toISOString()
+            });
+            isUserPro = false;
+        }
+    } catch (error) {
+        console.error("Ralat menyemak status pelan: ", error);
+    }
+}
+
 // Buka Modal untuk Tambah Baru (Dengan Semakan Had 10 Pelanggan Awal)
 if (openModalBtn) {
     openModalBtn.addEventListener('click', () => {
         const MAX_FREE_LIMIT = 10; 
-        const isPaidUser = false; // Tukar ke true jika akaun Pro/Paid
 
-        if (!isPaidUser && customers.length >= MAX_FREE_LIMIT) {
-            alert(`⚠️ Had Akaun Percuma (Free Version) telah penuh (${MAX_FREE_LIMIT} Customer).\n\nSila naik taraf ke akaun Pro (Paid) untuk menambah lebih ramai pelanggan!`);
+        if (!isUserPro && customers.length >= MAX_FREE_LIMIT) {
+            alert(`⚠️ Had Akaun Percuma (Free Version) telah penuh (${MAX_FREE_LIMIT} Customer).\n\nSila klik 'Upgrade to Pro' untuk menambah lebih ramai pelanggan!`);
             return; 
         }
 
@@ -162,7 +189,6 @@ function switchView(viewName) {
 
 let customers = [];
 
-// Tetapan default "Pengguna Biasa" dan "WELCOME"
 let appSettings = JSON.parse(localStorage.getItem('followuppro_settings')) || {
     owner: "Pengguna Biasa",
     business: "FOLLOWUPPRO Agency",
@@ -465,9 +491,10 @@ window.addEventListener('DOMContentLoaded', () => {
         if (window.auth && window.onAuthStateChanged) {
             clearInterval(checkInterval);
             
-            window.onAuthStateChanged(window.auth, (user) => {
+            window.onAuthStateChanged(window.auth, async (user) => {
                 if (user) {
                     if(authScreen) authScreen.style.display = 'none';
+                    await checkUserPlanStatus(user.uid);
                     fetchCustomersFromCloud();
                 } else {
                     if(authScreen) authScreen.style.display = 'flex';
@@ -497,29 +524,61 @@ if(authForm) {
     });
 }
 
-// MODAL UPGRADE PRO CONTROLLER
+// MODAL UPGRADE PRO & RAZORPAY CHECKOUT CONTROLLER
 const upgradeModal = document.getElementById('upgradeModal');
 
 function openUpgradeModal() {
     if (upgradeModal) upgradeModal.style.display = 'flex';
-    if (sidebar) sidebar.classList.remove('active'); // Tutup sidebar mobile jika terbuka
+    if (sidebar) sidebar.classList.remove('active');
 }
 
 function closeUpgradeModal() {
     if (upgradeModal) upgradeModal.style.display = 'none';
 }
 
-function processPaymentRedirect() {
+function startRazorpayCheckout() {
     const user = window.auth.currentUser;
     if (!user) {
         alert("Sila log masuk dahulu.");
         return;
     }
 
-    // Pautan pembayaran Razorpay/Curlec anda yang betul
-    const paymentUrl = "https://rzp.io/rzp/QfG7qdsz";
-    const finalPaymentUrl = `${paymentUrl}?receipt_id=${user.uid}`;
+    const options = {
+        "key": "rzp_test_MASUKKAN_KEY_ID_ANDA", // Ganti dengan Key ID Razorpay anda
+        "amount": 2900, // RM29.00 dalam sen
+        "currency": "MYR",
+        "name": "FOLLOWUPPRO",
+        "description": "Langganan Bulanan Usahawan Pro",
+        "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150",
+        "handler": async function (response){
+            try {
+                const userDocRef = window.doc(window.db, "users", user.uid);
+                await window.setDoc(userDocRef, {
+                    plan: "pro",
+                    paymentId: response.razorpay_payment_id,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+
+                isUserPro = true;
+                
+                alert("🎉 Pembayaran Berjaya! Akaun anda kini telah dinaik taraf kepada versi Pro.");
+                closeUpgradeModal();
+                fetchCustomersFromCloud();
+            } catch (error) {
+                console.error("Ralat kemas kini Firestore: ", error);
+                alert("Pembayaran berjaya, tetapi gagal mengemas kini akaun. Sila hubungi admin.");
+            }
+        },
+        "prefill": {
+            "email": user.email,
+            "contact": "60123456789"
+        },
+        "theme": {
+            "color": "#2563EB"
+        }
+    };
 
     closeUpgradeModal();
-    window.open(finalPaymentUrl, '_blank');
+    const rzp = new Razorpay(options);
+    rzp.open();
 }
