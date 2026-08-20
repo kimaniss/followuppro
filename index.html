@@ -395,17 +395,17 @@
     <!-- Pautan SDK Firebase & Modul -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, where, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBxB20EoaDjQ2O8Q_V_9sCfEtveBagL7QQ",
-  authDomain: "followuppro-81a4e.firebaseapp.com",
-  projectId: "followuppro-81a4e",
-  storageBucket: "followuppro-81a4e.firebasestorage.app",
-  messagingSenderId: "785359844996",
-  appId: "1:785359844996:web:3282348c32a1d4c83134d1",
-  measurementId: "G-CKLCQHEXGX"
+            authDomain: "followuppro-81a4e.firebaseapp.com",
+            projectId: "followuppro-81a4e",
+            storageBucket: "followuppro-81a4e.firebasestorage.app",
+            messagingSenderId: "785359844996",
+            appId: "1:785359844996:web:3282348c32a1d4c83134d1",
+            measurementId: "G-CKLCQHEXGX"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -421,6 +421,8 @@
         window.doc = doc;
         window.query = query;
         window.where = where;
+        window.getDoc = getDoc;     // <-- TAMBAH INI
+        window.setDoc = setDoc;     // <-- TAMBAH INI
         window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
         window.signInWithEmailAndPassword = signInWithEmailAndPassword;
         window.signOut = signOut;
