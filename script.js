@@ -112,10 +112,10 @@ async function checkUserPlanStatus(userId) {
         const userDocRef = window.doc(window.db, "users", userId);
         const docSnap = await window.getDoc(userDocRef);
         
-        if (docSnap.exists()) {
+        if (docSnap && docSnap.exists()) {
             const userData = docSnap.data();
             isUserPro = (userData.plan === "pro");
-        } else {
+        } else if (window.setDoc) {
             await window.setDoc(userDocRef, {
                 email: window.auth.currentUser.email,
                 plan: "free",
@@ -124,7 +124,8 @@ async function checkUserPlanStatus(userId) {
             isUserPro = false;
         }
     } catch (error) {
-        console.error("Ralat menyemak status pelan: ", error);
+        console.error("Ralat menyemak status pelan (diabaikan untuk muat data): ", error);
+        isUserPro = false; // Tetapkan free jika gagal
     }
 }
 
