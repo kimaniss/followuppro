@@ -510,6 +510,18 @@ function closeUpgradeModal() {
 }
 
 function processPaymentRedirect() {
-    alert("🚀 Pautan ke Payment Gateway (Billplz/ToyyibPay) akan dibuka di sini!\n\n(Selepas pembayaran berjaya, status akaun anda akan dikemas kini kepada 'Paid User' secara automatik).");
+    const user = window.auth.currentUser;
+    if (!user) {
+        alert("Sila log masuk dahulu.");
+        return;
+    }
+
+    // Pautan pembayaran Razorpay/Curlec anda
+    const paymentUrl = "https://rzp.io/rzp/QfG7qdsz";
+    const finalPaymentUrl = `${paymentUrl}?receipt_id=${user.uid}`;
+
     closeUpgradeModal();
+    window.open(finalPaymentUrl, '_blank');
+    
+    alert("Anda kini dihalakan ke halaman pembayaran selamat. Sila selesaikan proses langganan anda.");
 }
