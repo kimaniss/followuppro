@@ -544,11 +544,10 @@ function startRazorpayCheckout() {
     }
 
     const options = {
-        "key": "rzp_test_MASUKKAN_KEY_ID_ANDA", // Ganti dengan Key ID Razorpay anda
-        "amount": 2900, // RM29.00 dalam sen
-        "currency": "MYR",
-        "name": "FOLLOWUPPRO",
-        "description": "Langganan Bulanan Usahawan Pro",
+        "key": "rzp_test_TRwCILaQmGidqj",
+    "subscription_id": "sub_TRtaj04yS2uNrA", // ID langganan yang anda jana dari dashboard Razorpay/Curlec
+    "name": "FOLLOWUPPRO",
+    "description": "Langganan Bulanan Usahawan Pro",
         "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150",
         "handler": async function (response){
             try {
