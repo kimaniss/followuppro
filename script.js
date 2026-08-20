@@ -101,9 +101,19 @@ const menuFollowups = document.getElementById('menuFollowups');
 const menuSales = document.getElementById('menuSales');
 const menuSettings = document.getElementById('menuSettings');
 
-// Buka Modal untuk Tambah Baru
+// Buka Modal untuk Tambah Baru (Dengan Semakan Had Free Version)
 if (openModalBtn) {
     openModalBtn.addEventListener('click', () => {
+        const MAX_FREE_LIMIT = 10; 
+        const isPaidUser = false; // Tukar kepada true jika akaun Pro/Paid
+
+        // SEKAT TERUS DI SINI SEBELUM MODAL DIBUKA
+        if (!isPaidUser && customers.length >= MAX_FREE_LIMIT) {
+            alert(`⚠️ Had Akaun Percuma (Free Version) telah penuh (${MAX_FREE_LIMIT} Customer).\n\nSila naik taraf ke akaun Pro (Paid) untuk menambah lebih ramai pelanggan!`);
+            return; // Hentikan tindakan, modal tidak akan dibuka
+        }
+
+        // Jika belum capai had, buka modal seperti biasa
         if (modalTitle) modalTitle.innerText = "Tambah Customer Baru";
         if (saveBtnText) saveBtnText.innerText = "Simpan Customer";
         if (editDocIdInput) editDocIdInput.value = "";
